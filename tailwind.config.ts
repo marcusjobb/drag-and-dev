@@ -65,7 +65,10 @@ export default {
 					control: 'hsl(var(--element-control))',
 					logic: 'hsl(var(--element-logic))',
 					data: 'hsl(var(--element-data))',
-					output: 'hsl(var(--element-output))'
+					output: 'hsl(var(--element-output))',
+					function: 'hsl(var(--element-function))',
+					string: 'hsl(var(--element-string))',
+					exception: 'hsl(var(--element-exception))'
 				},
 				// Canvas and toolbox
 				canvas: 'hsl(var(--canvas))',

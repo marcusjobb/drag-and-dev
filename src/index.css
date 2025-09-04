@@ -50,6 +50,9 @@ All colors MUST be HSL.
     --element-logic: 217 91% 60%;
     --element-data: 142 76% 36%;
     --element-output: 48 96% 53%;
+    --element-function: 200 98% 39%;
+    --element-string: 340 82% 52%;
+    --element-exception: 0 84% 60%;
     
     /* Canvas and toolbox */
     --canvas: 0 0% 100%;

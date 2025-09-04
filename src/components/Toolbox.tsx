@@ -17,36 +17,93 @@ interface ToolboxProps {
 
 const toolboxItems = [
   {
-    category: 'Output',
+    category: 'Output & Debug',
     items: [
       { type: 'console.writeline', label: 'Console.WriteLine', icon: TerminalIcon, color: 'element-output' },
-      { type: 'console.write', label: 'Console.Write', icon: TerminalIcon, color: 'element-output' }
+      { type: 'console.write', label: 'Console.Write', icon: TerminalIcon, color: 'element-output' },
+      { type: 'console.readkey', label: 'Console.ReadKey', icon: TerminalIcon, color: 'element-output' },
+      { type: 'console.readline', label: 'Console.ReadLine', icon: TerminalIcon, color: 'element-output' },
+      { type: 'debug.print', label: 'Debug.Print', icon: TerminalIcon, color: 'element-output' },
+      { type: 'trace.write', label: 'Trace.Write', icon: TerminalIcon, color: 'element-output' }
     ]
   },
   {
     category: 'Control Flow',
     items: [
       { type: 'for', label: 'For Loop', icon: RepeatIcon, color: 'element-control' },
+      { type: 'foreach', label: 'ForEach Loop', icon: RepeatIcon, color: 'element-control' },
       { type: 'while', label: 'While Loop', icon: RepeatIcon, color: 'element-control' },
-      { type: 'if', label: 'If Statement', icon: GitBranchIcon, color: 'element-logic' },
-      { type: 'if-else', label: 'If-Else', icon: GitBranchIcon, color: 'element-logic' },
-      { type: 'if-else-if', label: 'If-Else If', icon: GitBranchIcon, color: 'element-logic' }
+      { type: 'do-while', label: 'Do-While Loop', icon: RepeatIcon, color: 'element-control' },
+      { type: 'switch', label: 'Switch Statement', icon: GitBranchIcon, color: 'element-control' },
+      { type: 'break', label: 'Break', icon: GitBranchIcon, color: 'element-control' },
+      { type: 'continue', label: 'Continue', icon: GitBranchIcon, color: 'element-control' }
     ]
   },
   {
-    category: 'Data',
+    category: 'Conditionals',
+    items: [
+      { type: 'if', label: 'If Statement', icon: GitBranchIcon, color: 'element-logic' },
+      { type: 'if-else', label: 'If-Else', icon: GitBranchIcon, color: 'element-logic' },
+      { type: 'if-else-if', label: 'If-Else If', icon: GitBranchIcon, color: 'element-logic' },
+      { type: 'ternary', label: 'Ternary Operator', icon: GitBranchIcon, color: 'element-logic' }
+    ]
+  },
+  {
+    category: 'Variables & Data',
     items: [
       { type: 'variable', label: 'Variable', icon: DatabaseIcon, color: 'element-data' },
+      { type: 'constant', label: 'Constant', icon: DatabaseIcon, color: 'element-data' },
+      { type: 'array', label: 'Array', icon: DatabaseIcon, color: 'element-data' },
+      { type: 'list', label: 'List', icon: DatabaseIcon, color: 'element-data' },
+      { type: 'dictionary', label: 'Dictionary', icon: DatabaseIcon, color: 'element-data' },
       { type: 'return', label: 'Return Statement', icon: FunctionSquareIcon, color: 'element-data' }
     ]
   },
   {
-    category: 'Data Types',
+    category: 'Primitive Types',
     items: [
       { type: 'string', label: 'String', icon: TypeIcon, color: 'element-data' },
       { type: 'int', label: 'Integer', icon: TypeIcon, color: 'element-data' },
+      { type: 'long', label: 'Long', icon: TypeIcon, color: 'element-data' },
+      { type: 'float', label: 'Float', icon: TypeIcon, color: 'element-data' },
+      { type: 'double', label: 'Double', icon: TypeIcon, color: 'element-data' },
+      { type: 'decimal', label: 'Decimal', icon: TypeIcon, color: 'element-data' },
       { type: 'bool', label: 'Boolean', icon: TypeIcon, color: 'element-data' },
-      { type: 'double', label: 'Double', icon: TypeIcon, color: 'element-data' }
+      { type: 'char', label: 'Character', icon: TypeIcon, color: 'element-data' },
+      { type: 'byte', label: 'Byte', icon: TypeIcon, color: 'element-data' },
+      { type: 'short', label: 'Short', icon: TypeIcon, color: 'element-data' }
+    ]
+  },
+  {
+    category: 'Math & Operations',
+    items: [
+      { type: 'math.sqrt', label: 'Math.Sqrt', icon: FunctionSquareIcon, color: 'element-function' },
+      { type: 'math.pow', label: 'Math.Pow', icon: FunctionSquareIcon, color: 'element-function' },
+      { type: 'math.abs', label: 'Math.Abs', icon: FunctionSquareIcon, color: 'element-function' },
+      { type: 'math.min', label: 'Math.Min', icon: FunctionSquareIcon, color: 'element-function' },
+      { type: 'math.max', label: 'Math.Max', icon: FunctionSquareIcon, color: 'element-function' },
+      { type: 'random', label: 'Random', icon: FunctionSquareIcon, color: 'element-function' }
+    ]
+  },
+  {
+    category: 'String Operations',
+    items: [
+      { type: 'string.length', label: 'String.Length', icon: TypeIcon, color: 'element-string' },
+      { type: 'string.substring', label: 'Substring', icon: TypeIcon, color: 'element-string' },
+      { type: 'string.split', label: 'Split', icon: TypeIcon, color: 'element-string' },
+      { type: 'string.replace', label: 'Replace', icon: TypeIcon, color: 'element-string' },
+      { type: 'string.tolower', label: 'ToLower', icon: TypeIcon, color: 'element-string' },
+      { type: 'string.toupper', label: 'ToUpper', icon: TypeIcon, color: 'element-string' },
+      { type: 'string.trim', label: 'Trim', icon: TypeIcon, color: 'element-string' },
+      { type: 'string.contains', label: 'Contains', icon: TypeIcon, color: 'element-string' }
+    ]
+  },
+  {
+    category: 'Exception Handling',
+    items: [
+      { type: 'try-catch', label: 'Try-Catch', icon: GitBranchIcon, color: 'element-exception' },
+      { type: 'try-catch-finally', label: 'Try-Catch-Finally', icon: GitBranchIcon, color: 'element-exception' },
+      { type: 'throw', label: 'Throw Exception', icon: GitBranchIcon, color: 'element-exception' }
     ]
   }
 ];
@@ -58,15 +115,16 @@ export const Toolbox: React.FC<ToolboxProps> = ({ onDragStart }) => {
   };
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="flex items-center gap-2 mb-6">
+    <div className="p-4 space-y-4 max-h-full overflow-y-auto">
+      <div className="flex items-center gap-2 mb-6 sticky top-0 bg-toolbox z-10 py-2">
         <CodeIcon className="h-5 w-5" />
-        <h2 className="text-lg font-semibold">Toolbox</h2>
+        <h2 className="text-lg font-semibold">Epic Toolbox 🚀</h2>
       </div>
 
       {toolboxItems.map((category) => (
         <div key={category.category} className="space-y-2">
-          <h3 className="text-sm font-medium text-toolbox-foreground/70 uppercase tracking-wider">
+          <h3 className="text-sm font-medium text-toolbox-foreground/70 uppercase tracking-wider flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-dev-primary animate-pulse"></span>
             {category.category}
           </h3>
           
@@ -76,15 +134,15 @@ export const Toolbox: React.FC<ToolboxProps> = ({ onDragStart }) => {
               return (
                 <Card
                   key={item.type}
-                  className={`p-3 cursor-grab active:cursor-grabbing transition-all duration-200 hover:scale-105 hover:shadow-lg bg-card/10 border-card/20 hover:bg-card/20`}
+                  className={`p-3 cursor-grab active:cursor-grabbing transition-all duration-200 hover:scale-105 hover:shadow-lg bg-card/10 border-card/20 hover:bg-card/20 hover:border-${item.color}/30 group`}
                   draggable
                   onDragStart={(e) => handleDragStart(e, item.type)}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`p-1.5 rounded-md bg-${item.color}/20`}>
-                      <IconComponent className={`h-4 w-4 text-${item.color}`} />
+                    <div className={`p-1.5 rounded-md bg-${item.color}/20 group-hover:bg-${item.color}/30 transition-colors`}>
+                      <IconComponent className={`h-4 w-4 text-${item.color} group-hover:scale-110 transition-transform`} />
                     </div>
-                    <span className="text-sm font-medium text-toolbox-foreground">
+                    <span className="text-sm font-medium text-toolbox-foreground group-hover:text-white transition-colors">
                       {item.label}
                     </span>
                   </div>
@@ -99,10 +157,10 @@ export const Toolbox: React.FC<ToolboxProps> = ({ onDragStart }) => {
         </div>
       ))}
 
-      <div className="mt-8 p-4 bg-card/10 rounded-lg border border-card/20">
-        <p className="text-xs text-toolbox-foreground/60 leading-relaxed">
-          💡 <strong>Tip:</strong> Drag elements from this toolbox onto the canvas to build your method. 
-          Configure properties in the right panel.
+      <div className="mt-8 p-4 bg-gradient-to-r from-dev-primary/10 to-dev-secondary/10 rounded-lg border border-dev-primary/20">
+        <p className="text-xs text-toolbox-foreground/80 leading-relaxed">
+          🎨 <strong>Pro Tip:</strong> Drag any element to the canvas and watch the magic happen! 
+          Each drop triggers epic celebrations! 🎉
         </p>
       </div>
     </div>

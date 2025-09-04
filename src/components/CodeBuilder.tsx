@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Toolbox } from './Toolbox';
 import { Canvas } from './Canvas';
 import { PropertiesPanel } from './PropertiesPanel';
-import { CodeOutput } from './CodeOutput';
+import { CodeEditor } from './CodeEditor';
+import { CelebrationEffects } from './CelebrationEffects';
 import { CodeGenerator } from '@/lib/codeGenerator';
-import { CodeIcon, PlayIcon, DownloadIcon } from 'lucide-react';
+import { CodeIcon, PlayIcon, DownloadIcon, WandIcon, SparklesIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export interface CodeElement {
@@ -52,6 +54,8 @@ const CodeBuilder: React.FC = () => {
   const [selectedMethod, setSelectedMethod] = useState(0);
   const [draggedElement, setDraggedElement] = useState<string | null>(null);
   const [generatedCode, setGeneratedCode] = useState<string>('');
+  const [celebrationTrigger, setCelebrationTrigger] = useState(0);
+  const [celebrationType, setCelebrationType] = useState<'confetti' | 'sparkles' | 'fireworks' | 'unicorn'>('confetti');
 
   const handleDragStart = (elementType: string) => {
     setDraggedElement(elementType);
@@ -67,15 +71,28 @@ const CodeBuilder: React.FC = () => {
     });
     
     setDraggedElement(null);
+    
+    // Trigger celebration!
+    const celebrations: ('confetti' | 'sparkles' | 'fireworks' | 'unicorn')[] = 
+      ['confetti', 'sparkles', 'fireworks', 'unicorn'];
+    const randomCelebration = celebrations[Math.floor(Math.random() * celebrations.length)];
+    setCelebrationType(randomCelebration);
+    setCelebrationTrigger(prev => prev + 1);
   };
 
   const generateCode = () => {
     const code = CodeGenerator.generate(projectData);
     setGeneratedCode(code);
+    setCelebrationType('fireworks');
+    setCelebrationTrigger(prev => prev + 1);
     toast({
-      title: 'Code Generated!',
-      description: 'Your method has been successfully generated.',
+      title: '🚀 Code Generated!',
+      description: 'Your epic method has been successfully generated!',
     });
+  };
+
+  const handleCodeChange = (newCode: string) => {
+    setGeneratedCode(newCode);
   };
 
   const downloadCode = () => {
@@ -147,22 +164,43 @@ const CodeBuilder: React.FC = () => {
           <Toolbox onDragStart={handleDragStart} />
         </div>
 
-        {/* Canvas Area */}
+        {/* Main Content Area */}
         <div className="flex-1 flex flex-col">
-          <div className="flex-1 bg-gradient-to-br from-background to-muted/50 p-6">
-            <Canvas
-              elements={projectData.methods[selectedMethod]?.elements || []}
-              onDrop={handleDrop}
-              draggedElement={draggedElement}
-            />
-          </div>
-          
-          {/* Code Output */}
-          {generatedCode && (
-            <div className="h-64 border-t">
-              <CodeOutput code={generatedCode} language={projectData.language} />
+          <Tabs defaultValue="builder" className="flex-1 flex flex-col">
+            <div className="px-6 py-3 border-b bg-card/50">
+              <TabsList className="grid w-full grid-cols-2 max-w-md">
+                <TabsTrigger value="builder" className="flex items-center gap-2">
+                  <WandIcon className="h-4 w-4" />
+                  Builder
+                </TabsTrigger>
+                <TabsTrigger value="code" className="flex items-center gap-2">
+                  <SparklesIcon className="h-4 w-4" />
+                  Code Editor
+                </TabsTrigger>
+              </TabsList>
             </div>
-          )}
+
+            <TabsContent value="builder" className="flex-1 m-0 p-0">
+              <div className="flex-1 bg-gradient-to-br from-background to-muted/50 p-6">
+                <Canvas
+                  elements={projectData.methods[selectedMethod]?.elements || []}
+                  onDrop={handleDrop}
+                  draggedElement={draggedElement}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="code" className="flex-1 m-0 p-0">
+              <div className="h-full">
+                <CodeEditor
+                  code={generatedCode}
+                  language={projectData.language}
+                  onChange={handleCodeChange}
+                  onDownload={downloadCode}
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Properties Panel */}
@@ -177,13 +215,16 @@ const CodeBuilder: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <div className="fixed bottom-4 left-4">
-        <Card className="p-3 bg-card/95 backdrop-blur-sm shadow-lg border-dev-primary/20">
+      <div className="fixed bottom-4 right-4">
+        <Card className="p-3 bg-card/95 backdrop-blur-sm shadow-lg border-dev-primary/20 hover:scale-105 transition-transform duration-200">
           <p className="text-sm text-muted-foreground flex items-center gap-1">
             ❤️ By Marcus Medina
           </p>
         </Card>
       </div>
+
+      {/* Celebration Effects */}
+      <CelebrationEffects trigger={celebrationTrigger} type={celebrationType} />
     </div>
   );
 };
