@@ -52,6 +52,27 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Developer theme colors
+				dev: {
+					primary: 'hsl(var(--dev-primary))',
+					secondary: 'hsl(var(--dev-secondary))',
+					success: 'hsl(var(--dev-success))',
+					warning: 'hsl(var(--dev-warning))',
+					error: 'hsl(var(--dev-error))'
+				},
+				// Code element colors
+				element: {
+					control: 'hsl(var(--element-control))',
+					logic: 'hsl(var(--element-logic))',
+					data: 'hsl(var(--element-data))',
+					output: 'hsl(var(--element-output))'
+				},
+				// Canvas and toolbox
+				canvas: 'hsl(var(--canvas))',
+				toolbox: {
+					DEFAULT: 'hsl(var(--toolbox))',
+					foreground: 'hsl(var(--toolbox-foreground))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
