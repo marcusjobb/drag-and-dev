@@ -56,6 +56,7 @@ const CodeBuilder: React.FC = () => {
   const [generatedCode, setGeneratedCode] = useState<string>('');
   const [celebrationTrigger, setCelebrationTrigger] = useState(0);
   const [celebrationType, setCelebrationType] = useState<'confetti' | 'sparkles' | 'fireworks' | 'unicorn'>('confetti');
+  const [activeTab, setActiveTab] = useState('builder');
 
   const handleDragStart = (elementType: string) => {
     setDraggedElement(elementType);
@@ -89,6 +90,18 @@ const CodeBuilder: React.FC = () => {
       title: '🚀 Code Generated!',
       description: 'Your epic method has been successfully generated!',
     });
+  };
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    if (value === 'code') {
+      generateCode();
+    }
+  };
+
+  const handleGenerateCodeClick = () => {
+    generateCode();
+    setActiveTab('code');
   };
 
   const handleCodeChange = (newCode: string) => {
@@ -138,7 +151,7 @@ const CodeBuilder: React.FC = () => {
             
             <div className="flex items-center gap-3">
               <Button
-                onClick={generateCode}
+                onClick={handleGenerateCodeClick}
                 className="bg-dev-primary hover:bg-dev-primary/90"
               >
                 <PlayIcon className="h-4 w-4 mr-2" />
@@ -166,7 +179,7 @@ const CodeBuilder: React.FC = () => {
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col">
-          <Tabs defaultValue="builder" className="flex-1 flex flex-col">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
             <div className="px-6 py-3 border-b bg-card/50">
               <TabsList className="grid w-full grid-cols-2 max-w-md">
                 <TabsTrigger value="builder" className="flex items-center gap-2">
