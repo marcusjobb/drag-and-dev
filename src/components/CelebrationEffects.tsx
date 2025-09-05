@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import confetti from 'confetti';
+import confetti from 'canvas-confetti';
 
 interface CelebrationEffectsProps {
   trigger: number;
