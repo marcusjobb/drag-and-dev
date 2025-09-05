@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface CodeEditorProps {
   code: string;
-  language: 'csharp' | 'java';
+  language: 'csharp' | 'java' | 'javascript' | 'python';
   onChange: (value: string) => void;
   onDownload: () => void;
 }
@@ -44,7 +44,25 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     editorRef.current = editor;
   };
 
-  const editorLanguage = language === 'csharp' ? 'csharp' : 'java';
+  const getEditorLanguage = (lang: string) => {
+    const languageMap = {
+      'csharp': 'csharp',
+      'java': 'java',
+      'javascript': 'javascript',
+      'python': 'python'
+    };
+    return languageMap[lang as keyof typeof languageMap] || 'plaintext';
+  };
+
+  const getLanguageDisplayName = (lang: string) => {
+    const displayMap = {
+      'csharp': 'C#',
+      'java': 'Java',
+      'javascript': 'JavaScript',
+      'python': 'Python'
+    };
+    return displayMap[lang as keyof typeof displayMap] || lang;
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -53,7 +71,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           <CodeIcon className="h-4 w-4 text-dev-primary" />
           <h3 className="font-semibold text-sm">Generated Code</h3>
           <span className="text-xs px-2 py-1 bg-dev-primary/10 text-dev-primary rounded-full font-mono">
-            {language === 'csharp' ? 'C#' : 'Java'}
+            {getLanguageDisplayName(language)}
           </span>
           <span className="text-xs px-2 py-1 bg-dev-success/10 text-dev-success rounded-full font-mono">
             Editable
@@ -87,7 +105,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       <div className="flex-1 overflow-hidden">
         <Editor
           height="100%"
-          language={editorLanguage}
+          language={getEditorLanguage(language)}
           value={code || '// Generated code will appear here...'}
           onChange={(value) => onChange(value || '')}
           onMount={handleEditorDidMount}

@@ -13,6 +13,7 @@ import {
 
 interface ToolboxProps {
   onDragStart: (elementType: string) => void;
+  language?: 'csharp' | 'java' | 'javascript' | 'python';
 }
 
 const toolboxItems = [
@@ -108,10 +109,30 @@ const toolboxItems = [
   }
 ];
 
-export const Toolbox: React.FC<ToolboxProps> = ({ onDragStart }) => {
+export const Toolbox: React.FC<ToolboxProps> = ({ onDragStart, language = 'csharp' }) => {
   const handleDragStart = (e: React.DragEvent, elementType: string) => {
     e.dataTransfer.setData('text/plain', elementType);
     onDragStart(elementType);
+  };
+
+  const getLanguageSpecificLabel = (type: string, defaultLabel: string) => {
+    const labelMaps = {
+      'console.writeline': {
+        'csharp': 'Console.WriteLine',
+        'java': 'System.out.println',
+        'javascript': 'console.log',
+        'python': 'print'
+      },
+      'console.write': {
+        'csharp': 'Console.Write',
+        'java': 'System.out.print',
+        'javascript': 'process.stdout.write',
+        'python': 'print (no newline)'
+      }
+    };
+    
+    const labelMap = labelMaps[type as keyof typeof labelMaps];
+    return labelMap?.[language] || defaultLabel;
   };
 
   return (
@@ -143,7 +164,7 @@ export const Toolbox: React.FC<ToolboxProps> = ({ onDragStart }) => {
                       <IconComponent className={`h-4 w-4 text-${item.color} group-hover:scale-110 transition-transform`} />
                     </div>
                     <span className="text-sm font-medium text-toolbox-foreground group-hover:text-white transition-colors">
-                      {item.label}
+                      {getLanguageSpecificLabel(item.type, item.label)}
                     </span>
                   </div>
                 </Card>

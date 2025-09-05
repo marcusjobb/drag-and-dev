@@ -6,10 +6,11 @@ import type { CodeElement } from './CodeBuilder';
 interface CanvasProps {
   elements: CodeElement[];
   onDrop: (element: CodeElement) => void;
+  onElementReorder: (elements: CodeElement[]) => void;
   draggedElement: string | null;
 }
 
-export const Canvas: React.FC<CanvasProps> = ({ elements, onDrop, draggedElement }) => {
+export const Canvas: React.FC<CanvasProps> = ({ elements, onDrop, onElementReorder, draggedElement }) => {
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
@@ -73,6 +74,32 @@ export const Canvas: React.FC<CanvasProps> = ({ elements, onDrop, draggedElement
     return 'element-data';
   };
 
+  const handleElementDragStart = (e: React.DragEvent, elementIndex: number) => {
+    e.dataTransfer.setData('application/json', JSON.stringify({ type: 'reorder', index: elementIndex }));
+  };
+
+  const handleElementDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      const data = JSON.parse(e.dataTransfer.getData('application/json'));
+      if (data.type === 'reorder') {
+        const newElements = [...elements];
+        const [removed] = newElements.splice(data.index, 1);
+        newElements.splice(targetIndex, 0, removed);
+        onElementReorder(newElements);
+      }
+    } catch {
+      // Not a reorder operation, handle as regular drop
+    }
+  };
+
+  const handleElementDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
     <div className="h-full relative">
       <div
@@ -110,7 +137,11 @@ export const Canvas: React.FC<CanvasProps> = ({ elements, onDrop, draggedElement
             {elements.map((element, index) => (
               <Card 
                 key={element.id}
-                className={`p-4 bg-card border-l-4 border-l-${getElementColor(element.type)} hover:shadow-md transition-shadow`}
+                className={`p-4 bg-card border-l-4 border-l-${getElementColor(element.type)} hover:shadow-md transition-shadow cursor-move`}
+                draggable
+                onDragStart={(e) => handleElementDragStart(e, index)}
+                onDrop={(e) => handleElementDrop(e, index)}
+                onDragOver={handleElementDragOver}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">

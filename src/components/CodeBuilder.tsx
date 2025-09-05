@@ -24,7 +24,7 @@ export interface CodeElement {
 export interface ProjectData {
   namespace: string;
   className: string;
-  language: 'csharp' | 'java';
+  language: 'csharp' | 'java' | 'javascript' | 'python';
   methods: {
     visibility: string;
     isStatic: boolean;
@@ -74,11 +74,20 @@ const CodeBuilder: React.FC = () => {
     setDraggedElement(null);
     
     // Trigger celebration!
-    const celebrations: ('confetti' | 'sparkles' | 'fireworks' | 'unicorn')[] = 
-      ['confetti', 'sparkles', 'fireworks', 'unicorn'];
+    const celebrations: ('confetti' | 'sparkles' | 'unicorn')[] = 
+      ['confetti', 'sparkles', 'unicorn'];
     const randomCelebration = celebrations[Math.floor(Math.random() * celebrations.length)];
     setCelebrationType(randomCelebration);
     setCelebrationTrigger(prev => prev + 1);
+  };
+
+  const handleElementReorder = (elements: CodeElement[]) => {
+    const updatedMethods = [...projectData.methods];
+    updatedMethods[selectedMethod].elements = elements;
+    setProjectData({
+      ...projectData,
+      methods: updatedMethods
+    });
   };
 
   const generateCode = () => {
@@ -114,7 +123,13 @@ const CodeBuilder: React.FC = () => {
       return;
     }
 
-    const extension = projectData.language === 'csharp' ? 'cs' : 'java';
+    const extensionMap = {
+      'csharp': 'cs',
+      'java': 'java', 
+      'javascript': 'js',
+      'python': 'py'
+    };
+    const extension = extensionMap[projectData.language] || 'txt';
     const blob = new Blob([generatedCode], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -144,7 +159,7 @@ const CodeBuilder: React.FC = () => {
               <div>
                 <h1 className="text-2xl font-bold text-foreground">Code Builder</h1>
                 <p className="text-sm text-muted-foreground">
-                  Drag & drop method generator for C# and Java
+                  Drag & drop method generator for C#, Java, JavaScript & Python
                 </p>
               </div>
             </div>
@@ -174,7 +189,7 @@ const CodeBuilder: React.FC = () => {
       <div className="flex h-[calc(100vh-73px)]">
         {/* Toolbox */}
         <div className="w-80 border-r bg-toolbox text-toolbox-foreground overflow-y-auto">
-          <Toolbox onDragStart={handleDragStart} />
+          <Toolbox onDragStart={handleDragStart} language={projectData.language} />
         </div>
 
         {/* Main Content Area */}
@@ -198,6 +213,7 @@ const CodeBuilder: React.FC = () => {
                 <Canvas
                   elements={projectData.methods[selectedMethod]?.elements || []}
                   onDrop={handleDrop}
+                  onElementReorder={handleElementReorder}
                   draggedElement={draggedElement}
                 />
               </div>

@@ -71,7 +71,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               <Label htmlFor="language">Language</Label>
               <Select
                 value={projectData.language}
-                onValueChange={(value: 'csharp' | 'java') => 
+                onValueChange={(value: 'csharp' | 'java' | 'javascript' | 'python') => 
                   updateProjectData({ language: value })
                 }
               >
@@ -81,12 +81,18 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 <SelectContent>
                   <SelectItem value="csharp">C#</SelectItem>
                   <SelectItem value="java">Java</SelectItem>
+                  <SelectItem value="javascript">JavaScript</SelectItem>
+                  <SelectItem value="python">Python</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="namespace">Namespace</Label>
+              <Label htmlFor="namespace">
+                {projectData.language === 'java' ? 'Package' : 
+                 projectData.language === 'javascript' ? 'Module' :
+                 projectData.language === 'python' ? 'Module' : 'Namespace'}
+              </Label>
               <Input
                 id="namespace"
                 value={projectData.namespace}

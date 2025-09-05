@@ -4,10 +4,17 @@ export class CodeGenerator {
   static generate(projectData: ProjectData): string {
     const { language, namespace, className, methods } = projectData;
     
-    if (language === 'csharp') {
-      return this.generateCSharp(namespace, className, methods);
-    } else {
-      return this.generateJava(namespace, className, methods);
+    switch (language) {
+      case 'csharp':
+        return this.generateCSharp(namespace, className, methods);
+      case 'java':
+        return this.generateJava(namespace, className, methods);
+      case 'javascript':
+        return this.generateJavaScript(namespace, className, methods);
+      case 'python':
+        return this.generatePython(namespace, className, methods);
+      default:
+        return this.generateCSharp(namespace, className, methods);
     }
   }
 
@@ -225,12 +232,25 @@ export class CodeGenerator {
     }
   }
 
-  private static generateChildElements(children: CodeElement[], language: 'csharp' | 'java'): string {
+  private static generateChildElements(children: CodeElement[], language: 'csharp' | 'java' | 'javascript' | 'python'): string {
     return children.map(child => {
-      const elementCode = language === 'csharp' 
-        ? this.generateCSharpElement(child)
-        : this.generateJavaElement(child);
-      return `\n                ${elementCode}`;
+      let elementCode: string;
+      switch (language) {
+        case 'csharp':
+          elementCode = this.generateCSharpElement(child);
+          break;
+        case 'java':
+          elementCode = this.generateJavaElement(child);
+          break;
+        case 'javascript':
+          elementCode = this.generateJavaScriptElement(child);
+          break;
+        case 'python':
+          elementCode = this.generatePythonElement(child);
+          break;
+      }
+      const indent = language === 'python' ? '            ' : '                ';
+      return `\n${indent}${elementCode}`;
     }).join('');
   }
 
@@ -243,5 +263,121 @@ export class CodeGenerator {
       'void': 'void'
     };
     return typeMap[type] || type;
+  }
+
+  private static generateJavaScript(
+    namespace: string, 
+    className: string, 
+    methods: ProjectData['methods']
+  ): string {
+    let code = `// Module: ${namespace}\n\n`;
+    code += `class ${className} {\n`;
+    
+    methods.forEach(method => {
+      const staticKeyword = method.isStatic ? 'static ' : '';
+      const parameters = method.parameters
+        .map(p => p.name)
+        .join(', ');
+      
+      code += `    ${staticKeyword}${method.name}(${parameters}) {\n`;
+      
+      method.elements.forEach(element => {
+        code += `        ${this.generateJavaScriptElement(element)}\n`;
+      });
+      
+      code += `    }\n\n`;
+    });
+    
+    code += `}\n\nexport default ${className};`;
+    return code;
+  }
+
+  private static generatePython(
+    namespace: string, 
+    className: string, 
+    methods: ProjectData['methods']
+  ): string {
+    let code = `# Module: ${namespace}\n\n`;
+    code += `class ${className}:\n`;
+    
+    methods.forEach(method => {
+      const parameters = method.parameters
+        .map(p => p.name)
+        .join(', ');
+      const selfParam = method.isStatic ? '' : 'self' + (parameters ? ', ' : '');
+      const decorator = method.isStatic ? '    @staticmethod\n' : '';
+      
+      code += `${decorator}    def ${method.name}(${selfParam}${parameters}):\n`;
+      
+      if (method.elements.length === 0) {
+        code += `        pass\n`;
+      } else {
+        method.elements.forEach(element => {
+          code += `        ${this.generatePythonElement(element)}\n`;
+        });
+      }
+      
+      code += `\n`;
+    });
+    
+    return code;
+  }
+
+  private static generateJavaScriptElement(element: CodeElement): string {
+    switch (element.type) {
+      case 'console.writeline':
+        return `console.log(${element.properties?.message ? `"${element.properties.message}"` : '""'});`;
+      case 'console.write':
+        return `process.stdout.write(${element.properties?.message ? `"${element.properties.message}"` : '""'});`;
+      case 'for':
+        const { variable = 'i', start = '0', end = '10', increment = '1' } = element.properties || {};
+        return `for (let ${variable} = ${start}; ${variable} < ${end}; ${variable} += ${increment}) {${element.children ? this.generateChildElements(element.children, 'javascript') : ''}\n        }`;
+      case 'while':
+        return `while (${element.properties?.condition || 'true'}) {${element.children ? this.generateChildElements(element.children, 'javascript') : ''}\n        }`;
+      case 'if':
+        return `if (${element.properties?.condition || 'true'}) {${element.children ? this.generateChildElements(element.children, 'javascript') : ''}\n        }`;
+      case 'variable':
+        const { name = 'myVariable', value = '""' } = element.properties || {};
+        return `let ${name} = ${value};`;
+      case 'return':
+        return `return ${element.properties?.value || 'null'};`;
+      case 'string':
+        return `let ${element.properties?.name || 'myString'} = ${element.properties?.value || '""'};`;
+      case 'int':
+        return `let ${element.properties?.name || 'myInt'} = ${element.properties?.value || '0'};`;
+      case 'bool':
+        return `let ${element.properties?.name || 'myBool'} = ${element.properties?.value || 'false'};`;
+      default:
+        return `// ${element.type}`;
+    }
+  }
+
+  private static generatePythonElement(element: CodeElement): string {
+    switch (element.type) {
+      case 'console.writeline':
+        return `print(${element.properties?.message ? `"${element.properties.message}"` : '""'})`;
+      case 'console.write':
+        return `print(${element.properties?.message ? `"${element.properties.message}"` : '""'}, end='')`;
+      case 'for':
+        const { variable = 'i', start = '0', end = '10' } = element.properties || {};
+        return `for ${variable} in range(${start}, ${end}):${element.children ? this.generateChildElements(element.children, 'python') : '\\n            pass'}`;
+      case 'while':
+        return `while ${element.properties?.condition || 'True'}:${element.children ? this.generateChildElements(element.children, 'python') : '\\n            pass'}`;
+      case 'if':
+        return `if ${element.properties?.condition || 'True'}:${element.children ? this.generateChildElements(element.children, 'python') : '\\n            pass'}`;
+      case 'variable':
+        const { name = 'my_variable', value = '""' } = element.properties || {};
+        return `${name} = ${value}`;
+      case 'return':
+        return `return ${element.properties?.value || 'None'}`;
+      case 'string':
+        return `${element.properties?.name || 'my_string'} = ${element.properties?.value || '""'}`;
+      case 'int':
+        return `${element.properties?.name || 'my_int'} = ${element.properties?.value || '0'}`;
+      case 'bool':
+        return `${element.properties?.name || 'my_bool'} = ${element.properties?.value || 'False'}`;
+      default:
+        return `# ${element.type}`;
+    }
   }
 }
