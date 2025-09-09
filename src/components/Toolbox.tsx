@@ -127,7 +127,133 @@ export const Toolbox: React.FC<ToolboxProps> = ({ onDragStart, language = 'cshar
         'csharp': 'Console.Write',
         'java': 'System.out.print',
         'javascript': 'process.stdout.write',
-        'python': 'print (no newline)'
+        'python': 'print'
+      },
+      'console.readkey': {
+        'csharp': 'Console.ReadKey',
+        'java': 'Scanner.nextLine',
+        'javascript': 'prompt',
+        'python': 'input'
+      },
+      'console.readline': {
+        'csharp': 'Console.ReadLine',
+        'java': 'Scanner.nextLine',
+        'javascript': 'prompt',
+        'python': 'input'
+      },
+      'debug.print': {
+        'csharp': 'Debug.Print',
+        'java': 'System.err.println',
+        'javascript': 'console.debug',
+        'python': 'print'
+      },
+      'trace.write': {
+        'csharp': 'Trace.Write',
+        'java': 'System.err.print',
+        'javascript': 'console.trace',
+        'python': 'print'
+      },
+      'for': {
+        'csharp': 'For Loop',
+        'java': 'For Loop',
+        'javascript': 'For Loop',
+        'python': 'For Loop'
+      },
+      'foreach': {
+        'csharp': 'ForEach Loop',
+        'java': 'Enhanced For',
+        'javascript': 'For...of Loop',
+        'python': 'For...in Loop'
+      },
+      'while': {
+        'csharp': 'While Loop',
+        'java': 'While Loop',
+        'javascript': 'While Loop',
+        'python': 'While Loop'
+      },
+      'do-while': {
+        'csharp': 'Do-While Loop',
+        'java': 'Do-While Loop',
+        'javascript': 'Do-While Loop',
+        'python': 'While True'
+      },
+      'switch': {
+        'csharp': 'Switch Statement',
+        'java': 'Switch Statement',
+        'javascript': 'Switch Statement',
+        'python': 'Match Statement'
+      },
+      'if': {
+        'csharp': 'If Statement',
+        'java': 'If Statement',
+        'javascript': 'If Statement',
+        'python': 'If Statement'
+      },
+      'if-else': {
+        'csharp': 'If-Else',
+        'java': 'If-Else',
+        'javascript': 'If-Else',
+        'python': 'If-Else'
+      },
+      'if-else-if': {
+        'csharp': 'If-Else If',
+        'java': 'If-Else If',
+        'javascript': 'If-Else If',
+        'python': 'If-Elif-Else'
+      },
+      'ternary': {
+        'csharp': 'Ternary Operator',
+        'java': 'Ternary Operator',
+        'javascript': 'Ternary Operator',
+        'python': 'Conditional Expression'
+      },
+      'variable': {
+        'csharp': 'Variable',
+        'java': 'Variable',
+        'javascript': 'Let/Const',
+        'python': 'Variable'
+      },
+      'constant': {
+        'csharp': 'Constant',
+        'java': 'Final Variable',
+        'javascript': 'Const',
+        'python': 'Constant'
+      },
+      'array': {
+        'csharp': 'Array',
+        'java': 'Array',
+        'javascript': 'Array',
+        'python': 'List'
+      },
+      'list': {
+        'csharp': 'List',
+        'java': 'ArrayList',
+        'javascript': 'Array',
+        'python': 'List'
+      },
+      'dictionary': {
+        'csharp': 'Dictionary',
+        'java': 'HashMap',
+        'javascript': 'Object/Map',
+        'python': 'Dictionary'
+      },
+      'try-catch': {
+        'csharp': 'Try-Catch',
+        'java': 'Try-Catch',
+        'javascript': 'Try-Catch',
+        'python': 'Try-Except'
+      },
+      'try-catch-finally': {
+        'csharp': 'Try-Catch-Finally',
+        'java': 'Try-Catch-Finally',
+        'javascript': 'Try-Catch-Finally',
+        'python': 'Try-Except-Finally'
+      },
+      'throw': {
+        'csharp': 'Throw Exception',
+        'java': 'Throw Exception',
+        'javascript': 'Throw Error',
+        'python': 'Raise Exception'
       }
     };
     

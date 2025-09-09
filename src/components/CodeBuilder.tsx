@@ -104,12 +104,26 @@ const CodeBuilder: React.FC = () => {
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     if (value === 'code') {
-      generateCode();
+      const code = CodeGenerator.generate(projectData);
+      setGeneratedCode(code);
+      setCelebrationType('fireworks');
+      setCelebrationTrigger(prev => prev + 1);
+      toast({
+        title: '🚀 Code Generated!',
+        description: 'Your epic method has been successfully generated!',
+      });
     }
   };
 
   const handleGenerateCodeClick = () => {
-    generateCode();
+    const code = CodeGenerator.generate(projectData);
+    setGeneratedCode(code);
+    setCelebrationType('fireworks');
+    setCelebrationTrigger(prev => prev + 1);
+    toast({
+      title: '🚀 Code Generated!',
+      description: 'Your epic method has been successfully generated!',
+    });
     setActiveTab('code');
   };
 
