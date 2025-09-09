@@ -18,14 +18,14 @@ interface ToolboxProps {
 
 const toolboxItems = [
   {
-    category: 'Output & Debug',
+    category: 'Output & Input',
     items: [
-      { type: 'console.writeline', label: 'Console.WriteLine', icon: TerminalIcon, color: 'element-output' },
-      { type: 'console.write', label: 'Console.Write', icon: TerminalIcon, color: 'element-output' },
-      { type: 'console.readkey', label: 'Console.ReadKey', icon: TerminalIcon, color: 'element-output' },
-      { type: 'console.readline', label: 'Console.ReadLine', icon: TerminalIcon, color: 'element-output' },
-      { type: 'debug.print', label: 'Debug.Print', icon: TerminalIcon, color: 'element-output' },
-      { type: 'trace.write', label: 'Trace.Write', icon: TerminalIcon, color: 'element-output' }
+      { type: 'console.writeline', label: 'Print Line', icon: TerminalIcon, color: 'element-output' },
+      { type: 'console.write', label: 'Print', icon: TerminalIcon, color: 'element-output' },
+      { type: 'console.readkey', label: 'Read Key', icon: TerminalIcon, color: 'element-output' },
+      { type: 'console.readline', label: 'Read Input', icon: TerminalIcon, color: 'element-output' },
+      { type: 'debug.print', label: 'Debug Print', icon: TerminalIcon, color: 'element-output' },
+      { type: 'trace.write', label: 'Trace Output', icon: TerminalIcon, color: 'element-output' }
     ]
   },
   {
@@ -115,151 +115,6 @@ export const Toolbox: React.FC<ToolboxProps> = ({ onDragStart, language = 'cshar
     onDragStart(elementType);
   };
 
-  const getLanguageSpecificLabel = (type: string, defaultLabel: string) => {
-    const labelMaps = {
-      'console.writeline': {
-        'csharp': 'Console.WriteLine',
-        'java': 'System.out.println',
-        'javascript': 'console.log',
-        'python': 'print'
-      },
-      'console.write': {
-        'csharp': 'Console.Write',
-        'java': 'System.out.print',
-        'javascript': 'process.stdout.write',
-        'python': 'print'
-      },
-      'console.readkey': {
-        'csharp': 'Console.ReadKey',
-        'java': 'Scanner.nextLine',
-        'javascript': 'prompt',
-        'python': 'input'
-      },
-      'console.readline': {
-        'csharp': 'Console.ReadLine',
-        'java': 'Scanner.nextLine',
-        'javascript': 'prompt',
-        'python': 'input'
-      },
-      'debug.print': {
-        'csharp': 'Debug.Print',
-        'java': 'System.err.println',
-        'javascript': 'console.debug',
-        'python': 'print'
-      },
-      'trace.write': {
-        'csharp': 'Trace.Write',
-        'java': 'System.err.print',
-        'javascript': 'console.trace',
-        'python': 'print'
-      },
-      'for': {
-        'csharp': 'For Loop',
-        'java': 'For Loop',
-        'javascript': 'For Loop',
-        'python': 'For Loop'
-      },
-      'foreach': {
-        'csharp': 'ForEach Loop',
-        'java': 'Enhanced For',
-        'javascript': 'For...of Loop',
-        'python': 'For...in Loop'
-      },
-      'while': {
-        'csharp': 'While Loop',
-        'java': 'While Loop',
-        'javascript': 'While Loop',
-        'python': 'While Loop'
-      },
-      'do-while': {
-        'csharp': 'Do-While Loop',
-        'java': 'Do-While Loop',
-        'javascript': 'Do-While Loop',
-        'python': 'While True'
-      },
-      'switch': {
-        'csharp': 'Switch Statement',
-        'java': 'Switch Statement',
-        'javascript': 'Switch Statement',
-        'python': 'Match Statement'
-      },
-      'if': {
-        'csharp': 'If Statement',
-        'java': 'If Statement',
-        'javascript': 'If Statement',
-        'python': 'If Statement'
-      },
-      'if-else': {
-        'csharp': 'If-Else',
-        'java': 'If-Else',
-        'javascript': 'If-Else',
-        'python': 'If-Else'
-      },
-      'if-else-if': {
-        'csharp': 'If-Else If',
-        'java': 'If-Else If',
-        'javascript': 'If-Else If',
-        'python': 'If-Elif-Else'
-      },
-      'ternary': {
-        'csharp': 'Ternary Operator',
-        'java': 'Ternary Operator',
-        'javascript': 'Ternary Operator',
-        'python': 'Conditional Expression'
-      },
-      'variable': {
-        'csharp': 'Variable',
-        'java': 'Variable',
-        'javascript': 'Let/Const',
-        'python': 'Variable'
-      },
-      'constant': {
-        'csharp': 'Constant',
-        'java': 'Final Variable',
-        'javascript': 'Const',
-        'python': 'Constant'
-      },
-      'array': {
-        'csharp': 'Array',
-        'java': 'Array',
-        'javascript': 'Array',
-        'python': 'List'
-      },
-      'list': {
-        'csharp': 'List',
-        'java': 'ArrayList',
-        'javascript': 'Array',
-        'python': 'List'
-      },
-      'dictionary': {
-        'csharp': 'Dictionary',
-        'java': 'HashMap',
-        'javascript': 'Object/Map',
-        'python': 'Dictionary'
-      },
-      'try-catch': {
-        'csharp': 'Try-Catch',
-        'java': 'Try-Catch',
-        'javascript': 'Try-Catch',
-        'python': 'Try-Except'
-      },
-      'try-catch-finally': {
-        'csharp': 'Try-Catch-Finally',
-        'java': 'Try-Catch-Finally',
-        'javascript': 'Try-Catch-Finally',
-        'python': 'Try-Except-Finally'
-      },
-      'throw': {
-        'csharp': 'Throw Exception',
-        'java': 'Throw Exception',
-        'javascript': 'Throw Error',
-        'python': 'Raise Exception'
-      }
-    };
-    
-    const labelMap = labelMaps[type as keyof typeof labelMaps];
-    return labelMap?.[language] || defaultLabel;
-  };
 
   return (
     <div className="p-4 space-y-4 max-h-full overflow-y-auto">
@@ -289,8 +144,8 @@ export const Toolbox: React.FC<ToolboxProps> = ({ onDragStart, language = 'cshar
                     <div className={`p-1.5 rounded-md bg-${item.color}/20 group-hover:bg-${item.color}/30 transition-colors`}>
                       <IconComponent className={`h-4 w-4 text-${item.color} group-hover:scale-110 transition-transform`} />
                     </div>
-                    <span className="text-sm font-medium text-toolbox-foreground group-hover:text-white transition-colors">
-                      {getLanguageSpecificLabel(item.type, item.label)}
+                    <span className="text-sm font-medium text-toolbox-foreground group-hover:text-white transition-colours">
+                      {item.label}
                     </span>
                   </div>
                 </Card>
