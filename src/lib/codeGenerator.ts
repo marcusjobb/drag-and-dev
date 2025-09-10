@@ -23,7 +23,7 @@ export class CodeGenerator {
     className: string, 
     methods: ProjectData['methods']
   ): string {
-    let code = `using System;\n\n`;
+    let code = `using System;\nusing System.Text.RegularExpressions;\nusing System.Linq;\n\n`;
     code += `namespace ${namespace}\n{\n`;
     code += `    public class ${className}\n    {\n`;
     
@@ -37,10 +37,20 @@ export class CodeGenerator {
       code += `        {\n`;
       
       method.elements.forEach(element => {
+        if (this.isUtilityFunction(element.type)) {
+          // Skip utility functions in method body - they'll be added as separate methods
+          return;
+        }
         code += `            ${this.generateCSharpElement(element)}\n`;
       });
       
       code += `        }\n\n`;
+    });
+
+    // Add utility functions as separate methods at class level
+    const utilityFunctions = this.getUtilityFunctions(methods);
+    utilityFunctions.forEach(funcType => {
+      code += `        ${this.generateCSharpUtilityMethod(funcType)}\n\n`;
     });
     
     code += `    }\n}`;
@@ -194,49 +204,27 @@ export class CodeGenerator {
       case 'throw':
         return `throw new ${element.properties?.exceptionType || 'Exception'}("${element.properties?.message || 'An error occurred'}");`;
       
-      // Utility Functions
+      // Utility Functions - these are now handled separately
       case 'isEven':
-        return `public static bool IsEven(int number)\n            {\n                return number % 2 == 0;\n            }`;
       case 'isOdd':
-        return `public static bool IsOdd(int number)\n            {\n                return number % 2 != 0;\n            }`;
       case 'isPrime':
-        return `public static bool IsPrime(int number)\n            {\n                if (number <= 1) return false;\n                for (int i = 2; i <= Math.Sqrt(number); i++)\n                {\n                    if (number % i == 0) return false;\n                }\n                return true;\n            }`;
       case 'factorial':
-        return `public static long Factorial(int n)\n            {\n                if (n <= 1) return 1;\n                return n * Factorial(n - 1);\n            }`;
       case 'fibonacci':
-        return `public static int Fibonacci(int n)\n            {\n                if (n <= 1) return n;\n                return Fibonacci(n - 1) + Fibonacci(n - 2);\n            }`;
       case 'reverse':
-        return `public static string ReverseString(string input)\n            {\n                char[] chars = input.ToCharArray();\n                Array.Reverse(chars);\n                return new string(chars);\n            }`;
       case 'palindrome':
-        return `public static bool IsPalindrome(string input)\n            {\n                string clean = input.ToLower().Replace(" ", "");\n                return clean == ReverseString(clean);\n            }`;
       case 'swap':
-        return `public static void Swap<T>(ref T a, ref T b)\n            {\n                T temp = a;\n                a = b;\n                b = temp;\n            }`;
-      
-      // Converters
       case 'toBinary':
-        return `public static string ToBinary(int number)\n            {\n                return Convert.ToString(number, 2);\n            }`;
       case 'toHex':
-        return `public static string ToHex(int number)\n            {\n                return number.ToString("X");\n            }`;
       case 'celsiusToFahrenheit':
-        return `public static double CelsiusToFahrenheit(double celsius)\n            {\n                return (celsius * 9.0 / 5.0) + 32;\n            }`;
       case 'fahrenheitToCelsius':
-        return `public static double FahrenheitToCelsius(double fahrenheit)\n            {\n                return (fahrenheit - 32) * 5.0 / 9.0;\n            }`;
       case 'inchesToCm':
-        return `public static double InchesToCm(double inches)\n            {\n                return inches * 2.54;\n            }`;
       case 'cmToInches':
-        return `public static double CmToInches(double cm)\n            {\n                return cm / 2.54;\n            }`;
-      
-      // Validators
       case 'checkEmail':
-        return `public static bool IsValidEmail(string email)\n            {\n                var regex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");\n                return regex.IsMatch(email);\n            }`;
       case 'validatePassword':
-        return `public static bool IsValidPassword(string password)\n            {\n                return password.Length >= 8 && password.Any(char.IsUpper) && password.Any(char.IsLower) && password.Any(char.IsDigit);\n            }`;
       case 'isValidUrl':
-        return `public static bool IsValidUrl(string url)\n            {\n                return Uri.TryCreate(url, UriKind.Absolute, out _);\n            }`;
       case 'isValidDate':
-        return `public static bool IsValidDate(string dateString)\n            {\n                return DateTime.TryParse(dateString, out _);\n            }`;
       case 'isNumeric':
-        return `public static bool IsNumeric(string input)\n            {\n                return double.TryParse(input, out _);\n            }`;
+        return `// ${element.type}() method will be added separately`;
       
       default:
         return `// ${element.type}`;
@@ -557,6 +545,72 @@ export class CodeGenerator {
       
       default:
         return `# ${element.type}`;
+    }
+  }
+
+  private static isUtilityFunction(type: string): boolean {
+    const utilityTypes = [
+      'isEven', 'isOdd', 'isPrime', 'factorial', 'fibonacci', 'reverse', 'palindrome', 'swap',
+      'toBinary', 'toHex', 'celsiusToFahrenheit', 'fahrenheitToCelsius', 'inchesToCm', 'cmToInches',
+      'checkEmail', 'validatePassword', 'isValidUrl', 'isValidDate', 'isNumeric'
+    ];
+    return utilityTypes.includes(type);
+  }
+
+  private static getUtilityFunctions(methods: ProjectData['methods']): string[] {
+    const utilityFunctions = new Set<string>();
+    methods.forEach(method => {
+      method.elements.forEach(element => {
+        if (this.isUtilityFunction(element.type)) {
+          utilityFunctions.add(element.type);
+        }
+      });
+    });
+    return Array.from(utilityFunctions);
+  }
+
+  private static generateCSharpUtilityMethod(type: string): string {
+    switch (type) {
+      case 'isEven':
+        return `public static bool IsEven(int number)\n        {\n            return number % 2 == 0;\n        }`;
+      case 'isOdd':
+        return `public static bool IsOdd(int number)\n        {\n            return number % 2 != 0;\n        }`;
+      case 'isPrime':
+        return `public static bool IsPrime(int number)\n        {\n            if (number <= 1) return false;\n            for (int i = 2; i <= Math.Sqrt(number); i++)\n            {\n                if (number % i == 0) return false;\n            }\n            return true;\n        }`;
+      case 'factorial':
+        return `public static long Factorial(int n)\n        {\n            if (n <= 1) return 1;\n            return n * Factorial(n - 1);\n        }`;
+      case 'fibonacci':
+        return `public static int Fibonacci(int n)\n        {\n            if (n <= 1) return n;\n            return Fibonacci(n - 1) + Fibonacci(n - 2);\n        }`;
+      case 'reverse':
+        return `public static string ReverseString(string input)\n        {\n            char[] chars = input.ToCharArray();\n            Array.Reverse(chars);\n            return new string(chars);\n        }`;
+      case 'palindrome':
+        return `public static bool IsPalindrome(string input)\n        {\n            string clean = input.ToLower().Replace(" ", "");\n            return clean == ReverseString(clean);\n        }`;
+      case 'swap':
+        return `public static void Swap<T>(ref T a, ref T b)\n        {\n            T temp = a;\n            a = b;\n            b = temp;\n        }`;
+      case 'toBinary':
+        return `public static string ToBinary(int number)\n        {\n            return Convert.ToString(number, 2);\n        }`;
+      case 'toHex':
+        return `public static string ToHex(int number)\n        {\n            return number.ToString("X");\n        }`;
+      case 'celsiusToFahrenheit':
+        return `public static double CelsiusToFahrenheit(double celsius)\n        {\n            return (celsius * 9.0 / 5.0) + 32;\n        }`;
+      case 'fahrenheitToCelsius':
+        return `public static double FahrenheitToCelsius(double fahrenheit)\n        {\n            return (fahrenheit - 32) * 5.0 / 9.0;\n        }`;
+      case 'inchesToCm':
+        return `public static double InchesToCm(double inches)\n        {\n            return inches * 2.54;\n        }`;
+      case 'cmToInches':
+        return `public static double CmToInches(double cm)\n        {\n            return cm / 2.54;\n        }`;
+      case 'checkEmail':
+        return `public static bool IsValidEmail(string email)\n        {\n            var regex = new Regex(@"^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");\n            return regex.IsMatch(email);\n        }`;
+      case 'validatePassword':
+        return `public static bool IsValidPassword(string password)\n        {\n            return password.Length >= 8 && password.Any(char.IsUpper) && password.Any(char.IsLower) && password.Any(char.IsDigit);\n        }`;
+      case 'isValidUrl':
+        return `public static bool IsValidUrl(string url)\n        {\n            return Uri.TryCreate(url, UriKind.Absolute, out _);\n        }`;
+      case 'isValidDate':
+        return `public static bool IsValidDate(string dateString)\n        {\n            return DateTime.TryParse(dateString, out _);\n        }`;
+      case 'isNumeric':
+        return `public static bool IsNumeric(string input)\n        {\n            return double.TryParse(input, out _);\n        }`;
+      default:
+        return '';
     }
   }
 }
