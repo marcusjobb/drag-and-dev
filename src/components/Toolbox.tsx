@@ -8,7 +8,11 @@ import {
   DatabaseIcon, 
   TerminalIcon,
   TypeIcon,
-  FunctionSquareIcon
+  FunctionSquareIcon,
+  CheckCircleIcon,
+  HashIcon,
+  MailIcon,
+  CalendarIcon
 } from 'lucide-react';
 
 interface ToolboxProps {
@@ -105,6 +109,40 @@ const toolboxItems = [
       { type: 'try-catch', label: 'Try-Catch', icon: GitBranchIcon, color: 'element-exception' },
       { type: 'try-catch-finally', label: 'Try-Catch-Finally', icon: GitBranchIcon, color: 'element-exception' },
       { type: 'throw', label: 'Throw Exception', icon: GitBranchIcon, color: 'element-exception' }
+    ]
+  },
+  {
+    category: 'Utility Functions',
+    items: [
+      { type: 'isEven', label: 'Is Even', icon: CheckCircleIcon, color: 'element-function' },
+      { type: 'isOdd', label: 'Is Odd', icon: CheckCircleIcon, color: 'element-function' },
+      { type: 'isPrime', label: 'Is Prime', icon: CheckCircleIcon, color: 'element-function' },
+      { type: 'factorial', label: 'Factorial', icon: HashIcon, color: 'element-function' },
+      { type: 'fibonacci', label: 'Fibonacci', icon: HashIcon, color: 'element-function' },
+      { type: 'reverse', label: 'Reverse String', icon: TypeIcon, color: 'element-string' },
+      { type: 'palindrome', label: 'Is Palindrome', icon: CheckCircleIcon, color: 'element-string' },
+      { type: 'swap', label: 'Swap Variables', icon: GitBranchIcon, color: 'element-function' }
+    ]
+  },
+  {
+    category: 'Converters',
+    items: [
+      { type: 'toBinary', label: 'To Binary', icon: HashIcon, color: 'element-function' },
+      { type: 'toHex', label: 'To Hexadecimal', icon: HashIcon, color: 'element-function' },
+      { type: 'celsiusToFahrenheit', label: 'Celsius to Fahrenheit', icon: TerminalIcon, color: 'element-function' },
+      { type: 'fahrenheitToCelsius', label: 'Fahrenheit to Celsius', icon: TerminalIcon, color: 'element-function' },
+      { type: 'inchesToCm', label: 'Inches to CM', icon: TerminalIcon, color: 'element-function' },
+      { type: 'cmToInches', label: 'CM to Inches', icon: TerminalIcon, color: 'element-function' }
+    ]
+  },
+  {
+    category: 'Validators',
+    items: [
+      { type: 'checkEmail', label: 'Validate Email', icon: MailIcon, color: 'element-function' },
+      { type: 'validatePassword', label: 'Validate Password', icon: CheckCircleIcon, color: 'element-function' },
+      { type: 'isValidUrl', label: 'Validate URL', icon: CheckCircleIcon, color: 'element-function' },
+      { type: 'isValidDate', label: 'Validate Date', icon: CalendarIcon, color: 'element-function' },
+      { type: 'isNumeric', label: 'Is Numeric', icon: CheckCircleIcon, color: 'element-function' }
     ]
   }
 ];
