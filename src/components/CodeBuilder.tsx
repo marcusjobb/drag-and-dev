@@ -251,7 +251,15 @@ const CodeBuilder: React.FC = () => {
           <PropertiesPanel
             projectData={projectData}
             selectedMethod={selectedMethod}
-            onProjectDataChange={setProjectData}
+            onProjectDataChange={(newProjectData) => {
+              const languageChanged = newProjectData.language !== projectData.language;
+              setProjectData(newProjectData);
+              // Regenerate code if we're currently viewing the code editor and the language changed
+              if (activeTab === 'code' && languageChanged) {
+                const newCode = CodeGenerator.generate(newProjectData);
+                setGeneratedCode(newCode);
+              }
+            }}
             onMethodChange={setSelectedMethod}
           />
         </div>
