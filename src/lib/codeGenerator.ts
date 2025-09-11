@@ -74,10 +74,20 @@ export class CodeGenerator {
       code += `    ${method.visibility} ${staticKeyword}${this.mapTypeToJava(method.returnType)} ${method.name}(${parameters}) {\n`;
       
       method.elements.forEach(element => {
+        if (this.isUtilityFunction(element.type)) {
+          // Skip utility functions in method body - they'll be added as separate methods
+          return;
+        }
         code += `        ${this.generateJavaElement(element)}\n`;
       });
       
       code += `    }\n\n`;
+    });
+
+    // Add utility functions as separate methods at class level
+    const utilityFunctions = this.getUtilityFunctions(methods);
+    utilityFunctions.forEach(funcType => {
+      code += `    ${this.generateJavaUtilityMethod(funcType)}\n\n`;
     });
     
     code += `}`;
@@ -260,49 +270,27 @@ export class CodeGenerator {
       case 'double':
         return `double ${element.properties?.name || 'myDouble'} = ${element.properties?.value || '0.0'};`;
       
-      // Utility Functions
+      // Utility Functions - these are now handled separately
       case 'isEven':
-        return `public static boolean isEven(int number) {\n                return number % 2 == 0;\n            }`;
       case 'isOdd':
-        return `public static boolean isOdd(int number) {\n                return number % 2 != 0;\n            }`;
       case 'isPrime':
-        return `public static boolean isPrime(int number) {\n                if (number <= 1) return false;\n                for (int i = 2; i <= Math.sqrt(number); i++) {\n                    if (number % i == 0) return false;\n                }\n                return true;\n            }`;
       case 'factorial':
-        return `public static long factorial(int n) {\n                if (n <= 1) return 1;\n                return n * factorial(n - 1);\n            }`;
       case 'fibonacci':
-        return `public static int fibonacci(int n) {\n                if (n <= 1) return n;\n                return fibonacci(n - 1) + fibonacci(n - 2);\n            }`;
       case 'reverse':
-        return `public static String reverseString(String input) {\n                return new StringBuilder(input).reverse().toString();\n            }`;
       case 'palindrome':
-        return `public static boolean isPalindrome(String input) {\n                String clean = input.toLowerCase().replaceAll(" ", "");\n                return clean.equals(reverseString(clean));\n            }`;
       case 'swap':
-        return `public static void swap(int[] arr, int i, int j) {\n                int temp = arr[i];\n                arr[i] = arr[j];\n                arr[j] = temp;\n            }`;
-      
-      // Converters
       case 'toBinary':
-        return `public static String toBinary(int number) {\n                return Integer.toBinaryString(number);\n            }`;
       case 'toHex':
-        return `public static String toHex(int number) {\n                return Integer.toHexString(number).toUpperCase();\n            }`;
       case 'celsiusToFahrenheit':
-        return `public static double celsiusToFahrenheit(double celsius) {\n                return (celsius * 9.0 / 5.0) + 32;\n            }`;
       case 'fahrenheitToCelsius':
-        return `public static double fahrenheitToCelsius(double fahrenheit) {\n                return (fahrenheit - 32) * 5.0 / 9.0;\n            }`;
       case 'inchesToCm':
-        return `public static double inchesToCm(double inches) {\n                return inches * 2.54;\n            }`;
       case 'cmToInches':
-        return `public static double cmToInches(double cm) {\n                return cm / 2.54;\n            }`;
-      
-      // Validators
       case 'checkEmail':
-        return `public static boolean isValidEmail(String email) {\n                return email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");\n            }`;
       case 'validatePassword':
-        return `public static boolean isValidPassword(String password) {\n                return password.length() >= 8 && password.matches(".*[A-Z].*") && \n                       password.matches(".*[a-z].*") && password.matches(".*\\d.*");\n            }`;
       case 'isValidUrl':
-        return `public static boolean isValidUrl(String url) {\n                try {\n                    new java.net.URL(url);\n                    return true;\n                } catch (Exception e) {\n                    return false;\n                }\n            }`;
       case 'isValidDate':
-        return `public static boolean isValidDate(String dateString) {\n                try {\n                    java.time.LocalDate.parse(dateString);\n                    return true;\n                } catch (Exception e) {\n                    return false;\n                }\n            }`;
       case 'isNumeric':
-        return `public static boolean isNumeric(String input) {\n                try {\n                    Double.parseDouble(input);\n                    return true;\n                } catch (NumberFormatException e) {\n                    return false;\n                }\n            }`;
+        return `// ${element.type}() method will be added separately`;
       
       default:
         return `// ${element.type}`;
@@ -359,10 +347,20 @@ export class CodeGenerator {
       code += `    ${staticKeyword}${method.name}(${parameters}) {\n`;
       
       method.elements.forEach(element => {
+        if (this.isUtilityFunction(element.type)) {
+          // Skip utility functions in method body - they'll be added as separate methods
+          return;
+        }
         code += `        ${this.generateJavaScriptElement(element)}\n`;
       });
       
       code += `    }\n\n`;
+    });
+
+    // Add utility functions as separate methods at class level
+    const utilityFunctions = this.getUtilityFunctions(methods);
+    utilityFunctions.forEach(funcType => {
+      code += `    ${this.generateJavaScriptUtilityMethod(funcType)}\n\n`;
     });
     
     code += `}\n\nexport default ${className};`;
@@ -386,15 +384,22 @@ export class CodeGenerator {
       
       code += `${decorator}    def ${method.name}(${selfParam}${parameters}):\n`;
       
-      if (method.elements.length === 0) {
+      const nonUtilityElements = method.elements.filter(element => !this.isUtilityFunction(element.type));
+      if (nonUtilityElements.length === 0) {
         code += `        pass\n`;
       } else {
-        method.elements.forEach(element => {
+        nonUtilityElements.forEach(element => {
           code += `        ${this.generatePythonElement(element)}\n`;
         });
       }
       
       code += `\n`;
+    });
+
+    // Add utility functions as separate methods at class level
+    const utilityFunctions = this.getUtilityFunctions(methods);
+    utilityFunctions.forEach(funcType => {
+      code += `    ${this.generatePythonUtilityMethod(funcType)}\n\n`;
     });
     
     return code;
@@ -425,41 +430,27 @@ export class CodeGenerator {
       case 'bool':
         return `let ${element.properties?.name || 'myBool'} = ${element.properties?.value || 'false'};`;
       
-      // Utility Functions
+      // Utility Functions - these are now handled separately
       case 'isEven':
-        return `static isEven(number) {\n            return number % 2 === 0;\n        }`;
       case 'isOdd':
-        return `static isOdd(number) {\n            return number % 2 !== 0;\n        }`;
       case 'isPrime':
-        return `static isPrime(number) {\n            if (number <= 1) return false;\n            for (let i = 2; i <= Math.sqrt(number); i++) {\n                if (number % i === 0) return false;\n            }\n            return true;\n        }`;
       case 'factorial':
-        return `static factorial(n) {\n            if (n <= 1) return 1;\n            return n * this.factorial(n - 1);\n        }`;
       case 'fibonacci':
-        return `static fibonacci(n) {\n            if (n <= 1) return n;\n            return this.fibonacci(n - 1) + this.fibonacci(n - 2);\n        }`;
       case 'reverse':
-        return `static reverseString(input) {\n            return input.split('').reverse().join('');\n        }`;
       case 'palindrome':
-        return `static isPalindrome(input) {\n            const clean = input.toLowerCase().replace(/\\s/g, '');\n            return clean === this.reverseString(clean);\n        }`;
       case 'swap':
-        return `static swap(arr, i, j) {\n            [arr[i], arr[j]] = [arr[j], arr[i]];\n        }`;
-      
-      // Converters
       case 'toBinary':
-        return `static toBinary(number) {\n            return number.toString(2);\n        }`;
       case 'toHex':
-        return `static toHex(number) {\n            return number.toString(16).toUpperCase();\n        }`;
       case 'celsiusToFahrenheit':
-        return `static celsiusToFahrenheit(celsius) {\n            return (celsius * 9.0 / 5.0) + 32;\n        }`;
       case 'fahrenheitToCelsius':
-        return `static fahrenheitToCelsius(fahrenheit) {\n            return (fahrenheit - 32) * 5.0 / 9.0;\n        }`;
       case 'inchesToCm':
-        return `static inchesToCm(inches) {\n            return inches * 2.54;\n        }`;
       case 'cmToInches':
-        return `static cmToInches(cm) {\n            return cm / 2.54;\n        }`;
-      
-      // Validators
       case 'checkEmail':
-        return `static isValidEmail(email) {\n            const regex = /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/;\n            return regex.test(email);\n        }`;
+      case 'validatePassword':
+      case 'isValidUrl':
+      case 'isValidDate':
+      case 'isNumeric':
+        return `// ${element.type}() method will be added separately`;
       case 'validatePassword':
         return `static isValidPassword(password) {\n            return password.length >= 8 && /[A-Z]/.test(password) && \n                   /[a-z]/.test(password) && /\\d/.test(password);\n        }`;
       case 'isValidUrl':
@@ -499,49 +490,27 @@ export class CodeGenerator {
       case 'bool':
         return `${element.properties?.name || 'my_bool'} = ${element.properties?.value || 'False'}`;
       
-      // Utility Functions
+      // Utility Functions - these are now handled separately
       case 'isEven':
-        return `@staticmethod\n        def is_even(number):\n            return number % 2 == 0`;
       case 'isOdd':
-        return `@staticmethod\n        def is_odd(number):\n            return number % 2 != 0`;
       case 'isPrime':
-        return `@staticmethod\n        def is_prime(number):\n            if number <= 1:\n                return False\n            for i in range(2, int(number**0.5) + 1):\n                if number % i == 0:\n                    return False\n            return True`;
       case 'factorial':
-        return `@staticmethod\n        def factorial(n):\n            if n <= 1:\n                return 1\n            return n * factorial(n - 1)`;
       case 'fibonacci':
-        return `@staticmethod\n        def fibonacci(n):\n            if n <= 1:\n                return n\n            return fibonacci(n - 1) + fibonacci(n - 2)`;
       case 'reverse':
-        return `@staticmethod\n        def reverse_string(input_str):\n            return input_str[::-1]`;
       case 'palindrome':
-        return `@staticmethod\n        def is_palindrome(input_str):\n            clean = input_str.lower().replace(' ', '')\n            return clean == clean[::-1]`;
       case 'swap':
-        return `@staticmethod\n        def swap(arr, i, j):\n            arr[i], arr[j] = arr[j], arr[i]`;
-      
-      // Converters
       case 'toBinary':
-        return `@staticmethod\n        def to_binary(number):\n            return bin(number)[2:]`;
       case 'toHex':
-        return `@staticmethod\n        def to_hex(number):\n            return hex(number)[2:].upper()`;
       case 'celsiusToFahrenheit':
-        return `@staticmethod\n        def celsius_to_fahrenheit(celsius):\n            return (celsius * 9.0 / 5.0) + 32`;
       case 'fahrenheitToCelsius':
-        return `@staticmethod\n        def fahrenheit_to_celsius(fahrenheit):\n            return (fahrenheit - 32) * 5.0 / 9.0`;
       case 'inchesToCm':
-        return `@staticmethod\n        def inches_to_cm(inches):\n            return inches * 2.54`;
       case 'cmToInches':
-        return `@staticmethod\n        def cm_to_inches(cm):\n            return cm / 2.54`;
-      
-      // Validators
       case 'checkEmail':
-        return `@staticmethod\n        def is_valid_email(email):\n            import re\n            pattern = r'^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$'\n            return bool(re.match(pattern, email))`;
       case 'validatePassword':
-        return `@staticmethod\n        def is_valid_password(password):\n            import re\n            return (len(password) >= 8 and \n                    bool(re.search(r'[A-Z]', password)) and\n                    bool(re.search(r'[a-z]', password)) and\n                    bool(re.search(r'\\d', password)))`;
       case 'isValidUrl':
-        return `@staticmethod\n        def is_valid_url(url):\n            try:\n                from urllib.parse import urlparse\n                result = urlparse(url)\n                return all([result.scheme, result.netloc])\n            except:\n                return False`;
       case 'isValidDate':
-        return `@staticmethod\n        def is_valid_date(date_string):\n            try:\n                from datetime import datetime\n                datetime.fromisoformat(date_string)\n                return True\n            except:\n                return False`;
       case 'isNumeric':
-        return `@staticmethod\n        def is_numeric(input_str):\n            try:\n                float(input_str)\n                return True\n            except ValueError:\n                return False`;
+        return `# ${element.type}() method will be added separately`;
       
       default:
         return `# ${element.type}`;
@@ -609,6 +578,141 @@ export class CodeGenerator {
         return `public static bool IsValidDate(string dateString)\n        {\n            return DateTime.TryParse(dateString, out _);\n        }`;
       case 'isNumeric':
         return `public static bool IsNumeric(string input)\n        {\n            return double.TryParse(input, out _);\n        }`;
+      default:
+        return '';
+    }
+  }
+
+  private static generateJavaUtilityMethod(funcType: string): string {
+    switch (funcType) {
+      case 'isEven':
+        return `public static boolean isEven(int number) {\n        return number % 2 == 0;\n    }`;
+      case 'isOdd':
+        return `public static boolean isOdd(int number) {\n        return number % 2 != 0;\n    }`;
+      case 'isPrime':
+        return `public static boolean isPrime(int number) {\n        if (number <= 1) return false;\n        for (int i = 2; i <= Math.sqrt(number); i++) {\n            if (number % i == 0) return false;\n        }\n        return true;\n    }`;
+      case 'factorial':
+        return `public static long factorial(int n) {\n        if (n <= 1) return 1;\n        return n * factorial(n - 1);\n    }`;
+      case 'fibonacci':
+        return `public static int fibonacci(int n) {\n        if (n <= 1) return n;\n        return fibonacci(n - 1) + fibonacci(n - 2);\n    }`;
+      case 'reverse':
+        return `public static String reverseString(String input) {\n        return new StringBuilder(input).reverse().toString();\n    }`;
+      case 'palindrome':
+        return `public static boolean isPalindrome(String input) {\n        String clean = input.toLowerCase().replaceAll(" ", "");\n        return clean.equals(reverseString(clean));\n    }`;
+      case 'swap':
+        return `public static void swap(int[] arr, int i, int j) {\n        int temp = arr[i];\n        arr[i] = arr[j];\n        arr[j] = temp;\n    }`;
+      case 'toBinary':
+        return `public static String toBinary(int number) {\n        return Integer.toBinaryString(number);\n    }`;
+      case 'toHex':
+        return `public static String toHex(int number) {\n        return Integer.toHexString(number).toUpperCase();\n    }`;
+      case 'celsiusToFahrenheit':
+        return `public static double celsiusToFahrenheit(double celsius) {\n        return (celsius * 9.0 / 5.0) + 32;\n    }`;
+      case 'fahrenheitToCelsius':
+        return `public static double fahrenheitToCelsius(double fahrenheit) {\n        return (fahrenheit - 32) * 5.0 / 9.0;\n    }`;
+      case 'inchesToCm':
+        return `public static double inchesToCm(double inches) {\n        return inches * 2.54;\n    }`;
+      case 'cmToInches':
+        return `public static double cmToInches(double cm) {\n        return cm / 2.54;\n    }`;
+      case 'checkEmail':
+        return `public static boolean isValidEmail(String email) {\n        return email.matches("^[^@\\\\s]+@[^@\\\\s]+\\\\.[^@\\\\s]+$");\n    }`;
+      case 'validatePassword':
+        return `public static boolean isValidPassword(String password) {\n        return password.length() >= 8 && password.matches(".*[A-Z].*") && \n               password.matches(".*[a-z].*") && password.matches(".*\\\\d.*");\n    }`;
+      case 'isValidUrl':
+        return `public static boolean isValidUrl(String url) {\n        try {\n            new java.net.URL(url);\n            return true;\n        } catch (Exception e) {\n            return false;\n        }\n    }`;
+      case 'isValidDate':
+        return `public static boolean isValidDate(String dateString) {\n        try {\n            java.time.LocalDate.parse(dateString);\n            return true;\n        } catch (Exception e) {\n            return false;\n        }\n    }`;
+      case 'isNumeric':
+        return `public static boolean isNumeric(String input) {\n        try {\n            Double.parseDouble(input);\n            return true;\n        } catch (NumberFormatException e) {\n            return false;\n        }\n    }`;
+      default:
+        return '';
+    }
+  }
+
+  private static generateJavaScriptUtilityMethod(funcType: string): string {
+    switch (funcType) {
+      case 'isEven':
+        return `static isEven(number) {\n        return number % 2 === 0;\n    }`;
+      case 'isOdd':
+        return `static isOdd(number) {\n        return number % 2 !== 0;\n    }`;
+      case 'isPrime':
+        return `static isPrime(number) {\n        if (number <= 1) return false;\n        for (let i = 2; i <= Math.sqrt(number); i++) {\n            if (number % i === 0) return false;\n        }\n        return true;\n    }`;
+      case 'factorial':
+        return `static factorial(n) {\n        if (n <= 1) return 1;\n        return n * this.factorial(n - 1);\n    }`;
+      case 'fibonacci':
+        return `static fibonacci(n) {\n        if (n <= 1) return n;\n        return this.fibonacci(n - 1) + this.fibonacci(n - 2);\n    }`;
+      case 'reverse':
+        return `static reverseString(input) {\n        return input.split('').reverse().join('');\n    }`;
+      case 'palindrome':
+        return `static isPalindrome(input) {\n        const clean = input.toLowerCase().replace(/\\\\s/g, '');\n        return clean === this.reverseString(clean);\n    }`;
+      case 'swap':
+        return `static swap(arr, i, j) {\n        [arr[i], arr[j]] = [arr[j], arr[i]];\n    }`;
+      case 'toBinary':
+        return `static toBinary(number) {\n        return number.toString(2);\n    }`;
+      case 'toHex':
+        return `static toHex(number) {\n        return number.toString(16).toUpperCase();\n    }`;
+      case 'celsiusToFahrenheit':
+        return `static celsiusToFahrenheit(celsius) {\n        return (celsius * 9.0 / 5.0) + 32;\n    }`;
+      case 'fahrenheitToCelsius':
+        return `static fahrenheitToCelsius(fahrenheit) {\n        return (fahrenheit - 32) * 5.0 / 9.0;\n    }`;
+      case 'inchesToCm':
+        return `static inchesToCm(inches) {\n        return inches * 2.54;\n    }`;
+      case 'cmToInches':
+        return `static cmToInches(cm) {\n        return cm / 2.54;\n    }`;
+      case 'checkEmail':
+        return `static isValidEmail(email) {\n        const regex = /^[^@\\\\s]+@[^@\\\\s]+\\\\.[^@\\\\s]+$/;\n        return regex.test(email);\n    }`;
+      case 'validatePassword':
+        return `static isValidPassword(password) {\n        return password.length >= 8 && /[A-Z]/.test(password) && \n               /[a-z]/.test(password) && /\\\\d/.test(password);\n    }`;
+      case 'isValidUrl':
+        return `static isValidUrl(url) {\n        try {\n            new URL(url);\n            return true;\n        } catch (e) {\n            return false;\n        }\n    }`;
+      case 'isValidDate':
+        return `static isValidDate(dateString) {\n        return !isNaN(Date.parse(dateString));\n    }`;
+      case 'isNumeric':
+        return `static isNumeric(input) {\n        return !isNaN(parseFloat(input)) && isFinite(input);\n    }`;
+      default:
+        return '';
+    }
+  }
+
+  private static generatePythonUtilityMethod(funcType: string): string {
+    switch (funcType) {
+      case 'isEven':
+        return `@staticmethod\n    def is_even(number):\n        return number % 2 == 0`;
+      case 'isOdd':
+        return `@staticmethod\n    def is_odd(number):\n        return number % 2 != 0`;
+      case 'isPrime':
+        return `@staticmethod\n    def is_prime(number):\n        if number <= 1:\n            return False\n        for i in range(2, int(number**0.5) + 1):\n            if number % i == 0:\n                return False\n        return True`;
+      case 'factorial':
+        return `@staticmethod\n    def factorial(n):\n        if n <= 1:\n            return 1\n        return n * MyClass.factorial(n - 1)`;
+      case 'fibonacci':
+        return `@staticmethod\n    def fibonacci(n):\n        if n <= 1:\n            return n\n        return MyClass.fibonacci(n - 1) + MyClass.fibonacci(n - 2)`;
+      case 'reverse':
+        return `@staticmethod\n    def reverse_string(input_str):\n        return input_str[::-1]`;
+      case 'palindrome':
+        return `@staticmethod\n    def is_palindrome(input_str):\n        clean = input_str.lower().replace(' ', '')\n        return clean == clean[::-1]`;
+      case 'swap':
+        return `@staticmethod\n    def swap(arr, i, j):\n        arr[i], arr[j] = arr[j], arr[i]`;
+      case 'toBinary':
+        return `@staticmethod\n    def to_binary(number):\n        return bin(number)[2:]`;
+      case 'toHex':
+        return `@staticmethod\n    def to_hex(number):\n        return hex(number)[2:].upper()`;
+      case 'celsiusToFahrenheit':
+        return `@staticmethod\n    def celsius_to_fahrenheit(celsius):\n        return (celsius * 9.0 / 5.0) + 32`;
+      case 'fahrenheitToCelsius':
+        return `@staticmethod\n    def fahrenheit_to_celsius(fahrenheit):\n        return (fahrenheit - 32) * 5.0 / 9.0`;
+      case 'inchesToCm':
+        return `@staticmethod\n    def inches_to_cm(inches):\n        return inches * 2.54`;
+      case 'cmToInches':
+        return `@staticmethod\n    def cm_to_inches(cm):\n        return cm / 2.54`;
+      case 'checkEmail':
+        return `@staticmethod\n    def is_valid_email(email):\n        import re\n        pattern = r'^[^@\\\\s]+@[^@\\\\s]+\\\\.[^@\\\\s]+$'\n        return bool(re.match(pattern, email))`;
+      case 'validatePassword':
+        return `@staticmethod\n    def is_valid_password(password):\n        import re\n        return (len(password) >= 8 and \n                bool(re.search(r'[A-Z]', password)) and\n                bool(re.search(r'[a-z]', password)) and\n                bool(re.search(r'\\\\d', password)))`;
+      case 'isValidUrl':
+        return `@staticmethod\n    def is_valid_url(url):\n        try:\n            from urllib.parse import urlparse\n            result = urlparse(url)\n            return all([result.scheme, result.netloc])\n        except:\n            return False`;
+      case 'isValidDate':
+        return `@staticmethod\n    def is_valid_date(date_string):\n        try:\n            from datetime import datetime\n            datetime.fromisoformat(date_string)\n            return True\n        except:\n            return False`;
+      case 'isNumeric':
+        return `@staticmethod\n    def is_numeric(input_str):\n        try:\n            float(input_str)\n            return True\n        except ValueError:\n            return False`;
       default:
         return '';
     }
