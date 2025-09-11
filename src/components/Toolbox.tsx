@@ -155,34 +155,34 @@ export const Toolbox: React.FC<ToolboxProps> = ({ onDragStart, language = 'cshar
 
 
   return (
-    <div className="p-4 space-y-4 max-h-full overflow-y-auto">
-      <div className="flex items-center gap-2 mb-6 sticky top-0 bg-toolbox z-10 py-2">
-        <CodeIcon className="h-5 w-5" />
-        <h2 className="text-lg font-semibold">Epic Toolbox 🚀</h2>
+    <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 max-h-full overflow-y-auto">
+      <div className="flex items-center gap-2 mb-4 sm:mb-6 sticky top-0 bg-toolbox z-10 py-2">
+        <CodeIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+        <h2 className="text-base sm:text-lg font-semibold">Epic Toolbox 🚀</h2>
       </div>
 
       {toolboxItems.map((category) => (
         <div key={category.category} className="space-y-2">
-          <h3 className="text-sm font-medium text-toolbox-foreground/70 uppercase tracking-wider flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-dev-primary animate-pulse"></span>
+          <h3 className="text-xs sm:text-sm font-medium text-toolbox-foreground/70 uppercase tracking-wider flex items-center gap-2">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-dev-primary animate-pulse"></span>
             {category.category}
           </h3>
           
-          <div className="space-y-1">
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-1 sm:gap-2">
             {category.items.map((item) => {
               const IconComponent = item.icon;
               return (
                 <Card
                   key={item.type}
-                  className={`p-3 cursor-grab active:cursor-grabbing transition-all duration-200 hover:scale-105 hover:shadow-lg bg-card/10 border-card/20 hover:bg-card/20 hover:border-${item.color}/30 group`}
+                  className={`p-2 sm:p-3 cursor-grab active:cursor-grabbing transition-all duration-200 hover:scale-105 hover:shadow-lg bg-card/10 border-card/20 hover:bg-card/20 hover:border-${item.color}/30 group`}
                   draggable
                   onDragStart={(e) => handleDragStart(e, item.type)}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`p-1.5 rounded-md bg-${item.color}/20 group-hover:bg-${item.color}/30 transition-colors`}>
-                      <IconComponent className={`h-4 w-4 text-${item.color} group-hover:scale-110 transition-transform`} />
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className={`p-1 sm:p-1.5 rounded-md bg-${item.color}/20 group-hover:bg-${item.color}/30 transition-colors flex-shrink-0`}>
+                      <IconComponent className={`h-3 w-3 sm:h-4 sm:w-4 text-${item.color} group-hover:scale-110 transition-transform`} />
                     </div>
-                    <span className="text-sm font-medium text-toolbox-foreground group-hover:text-white transition-colours">
+                    <span className="text-xs sm:text-sm font-medium text-toolbox-foreground group-hover:text-white transition-colours truncate">
                       {item.label}
                     </span>
                   </div>
@@ -192,12 +192,12 @@ export const Toolbox: React.FC<ToolboxProps> = ({ onDragStart, language = 'cshar
           </div>
           
           {category !== toolboxItems[toolboxItems.length - 1] && (
-            <Separator className="my-4 bg-toolbox-foreground/20" />
+            <Separator className="my-3 sm:my-4 bg-toolbox-foreground/20" />
           )}
         </div>
       ))}
 
-      <div className="mt-8 p-4 bg-gradient-to-r from-dev-primary/10 to-dev-secondary/10 rounded-lg border border-dev-primary/20">
+      <div className="mt-6 sm:mt-8 p-3 sm:p-4 bg-gradient-to-r from-dev-primary/10 to-dev-secondary/10 rounded-lg border border-dev-primary/20">
         <p className="text-xs text-toolbox-foreground/80 leading-relaxed">
           🎨 <strong>Pro Tip:</strong> Drag any element to the canvas and watch the magic happen! 
           Each drop triggers epic celebrations! 🎉

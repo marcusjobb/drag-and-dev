@@ -164,35 +164,38 @@ const CodeBuilder: React.FC = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-card">
-        <div className="px-6 py-4">
+        <div className="px-3 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-r from-dev-primary to-dev-secondary rounded-lg">
-                <CodeIcon className="h-6 w-6 text-white" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="p-1.5 sm:p-2 bg-gradient-to-r from-dev-primary to-dev-secondary rounded-lg">
+                <CodeIcon className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Code Builder</h1>
-                <p className="text-sm text-muted-foreground">
+                <h1 className="text-lg sm:text-2xl font-bold text-foreground">Code Builder</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
                   Drag & drop method generator for C#, Java, JavaScript & Python
                 </p>
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <Button
                 onClick={handleGenerateCodeClick}
-                className="bg-dev-primary hover:bg-dev-primary/90"
+                className="bg-dev-primary hover:bg-dev-primary/90 text-xs sm:text-sm px-2 sm:px-4"
+                size="sm"
               >
-                <PlayIcon className="h-4 w-4 mr-2" />
-                Generate Code
+                <PlayIcon className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Generate Code</span>
+                <span className="sm:hidden">Generate</span>
               </Button>
               <Button
                 onClick={downloadCode}
                 variant="outline"
-                className="border-dev-primary text-dev-primary hover:bg-dev-primary/10"
+                className="border-dev-primary text-dev-primary hover:bg-dev-primary/10 text-xs sm:text-sm px-2 sm:px-4"
+                size="sm"
               >
-                <DownloadIcon className="h-4 w-4 mr-2" />
-                Download
+                <DownloadIcon className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Download</span>
               </Button>
             </div>
           </div>
@@ -200,73 +203,78 @@ const CodeBuilder: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <div className="flex h-[calc(100vh-73px)]">
-        {/* Toolbox */}
-        <div className="w-80 border-r bg-toolbox text-toolbox-foreground overflow-y-auto">
+      <div className="flex flex-col lg:flex-row h-[calc(100vh-65px)] sm:h-[calc(100vh-73px)]">
+        {/* Mobile: Stack vertically, Desktop: Side by side */}
+        
+        {/* Toolbox - Collapsible on mobile */}
+        <div className="w-full lg:w-80 border-b lg:border-b-0 lg:border-r bg-toolbox text-toolbox-foreground max-h-60 lg:max-h-full overflow-y-auto">
           <Toolbox onDragStart={handleDragStart} language={projectData.language} />
         </div>
 
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col">
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
-            <div className="px-6 py-3 border-b bg-card/50">
-              <TabsList className="grid w-full grid-cols-2 max-w-md">
-                <TabsTrigger value="builder" className="flex items-center gap-2">
-                  <WandIcon className="h-4 w-4" />
-                  Builder
-                </TabsTrigger>
-                <TabsTrigger value="code" className="flex items-center gap-2">
-                  <SparklesIcon className="h-4 w-4" />
-                  Code Editor
-                </TabsTrigger>
-              </TabsList>
-            </div>
-
-            <TabsContent value="builder" className="flex-1 m-0 p-0">
-              <div className="flex-1 bg-gradient-to-br from-background to-muted/50 p-6">
-                <Canvas
-                  elements={projectData.methods[selectedMethod]?.elements || []}
-                  onDrop={handleDrop}
-                  onElementReorder={handleElementReorder}
-                  draggedElement={draggedElement}
-                />
+        {/* Main Content Area and Properties Panel Container */}
+        <div className="flex-1 flex flex-col xl:flex-row min-h-0">
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col min-h-0">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
+              <div className="px-3 sm:px-6 py-2 sm:py-3 border-b bg-card/50">
+                <TabsList className="grid w-full grid-cols-2 max-w-md">
+                  <TabsTrigger value="builder" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+                    <WandIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                    Builder
+                  </TabsTrigger>
+                  <TabsTrigger value="code" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+                    <SparklesIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                    Code Editor
+                  </TabsTrigger>
+                </TabsList>
               </div>
-            </TabsContent>
 
-            <TabsContent value="code" className="flex-1 m-0 p-0">
-              <div className="h-full">
-                <CodeEditor
-                  code={generatedCode}
-                  language={projectData.language}
-                  onChange={handleCodeChange}
-                  onDownload={downloadCode}
-                />
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
+              <TabsContent value="builder" className="flex-1 m-0 p-0">
+                <div className="flex-1 bg-gradient-to-br from-background to-muted/50 p-3 sm:p-6">
+                  <Canvas
+                    elements={projectData.methods[selectedMethod]?.elements || []}
+                    onDrop={handleDrop}
+                    onElementReorder={handleElementReorder}
+                    draggedElement={draggedElement}
+                  />
+                </div>
+              </TabsContent>
 
-        {/* Properties Panel */}
-        <div className="w-80 border-l bg-card overflow-y-auto">
-          <PropertiesPanel
-            projectData={projectData}
-            selectedMethod={selectedMethod}
-            onProjectDataChange={(newProjectData) => {
-              const languageChanged = newProjectData.language !== projectData.language;
-              setProjectData(newProjectData);
-              // Regenerate code if we're currently viewing the code editor and the language changed
-              if (activeTab === 'code' && languageChanged) {
-                const newCode = CodeGenerator.generate(newProjectData);
-                setGeneratedCode(newCode);
-              }
-            }}
-            onMethodChange={setSelectedMethod}
-          />
+              <TabsContent value="code" className="flex-1 m-0 p-0">
+                <div className="h-full">
+                  <CodeEditor
+                    code={generatedCode}
+                    language={projectData.language}
+                    onChange={handleCodeChange}
+                    onDownload={downloadCode}
+                  />
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          {/* Properties Panel - Collapsible on mobile */}
+          <div className="w-full xl:w-80 border-t xl:border-t-0 xl:border-l bg-card max-h-80 xl:max-h-full overflow-y-auto">
+            <PropertiesPanel
+              projectData={projectData}
+              selectedMethod={selectedMethod}
+              onProjectDataChange={(newProjectData) => {
+                const languageChanged = newProjectData.language !== projectData.language;
+                setProjectData(newProjectData);
+                // Regenerate code if we're currently viewing the code editor and the language changed
+                if (activeTab === 'code' && languageChanged) {
+                  const newCode = CodeGenerator.generate(newProjectData);
+                  setGeneratedCode(newCode);
+                }
+              }}
+              onMethodChange={setSelectedMethod}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="fixed bottom-4 right-4">
+      {/* Footer - Hidden on small screens */}
+      <div className="hidden sm:block fixed bottom-4 right-4">
         <Card className="p-3 bg-card/95 backdrop-blur-sm shadow-lg border-dev-primary/20 hover:scale-105 transition-transform duration-200">
           <p className="text-sm text-muted-foreground flex items-center gap-1">
             ❤️ By Marcus Medina

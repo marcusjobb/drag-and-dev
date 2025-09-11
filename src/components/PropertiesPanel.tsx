@@ -53,29 +53,29 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   };
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="flex items-center gap-2 mb-6">
-        <SettingsIcon className="h-5 w-5 text-dev-primary" />
-        <h2 className="text-lg font-semibold">Properties</h2>
+    <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
+      <div className="flex items-center gap-2 mb-4 sm:mb-6">
+        <SettingsIcon className="h-4 w-4 sm:h-5 sm:w-5 text-dev-primary" />
+        <h2 className="text-base sm:text-lg font-semibold">Properties</h2>
       </div>
 
       <Tabs defaultValue="project" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-2 text-xs sm:text-sm">
           <TabsTrigger value="project">Project</TabsTrigger>
           <TabsTrigger value="method">Method</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="project" className="space-y-4">
-          <Card className="p-4 space-y-4">
+        <TabsContent value="project" className="space-y-3 sm:space-y-4">
+          <Card className="p-3 sm:p-4 space-y-3 sm:space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="language">Language</Label>
+              <Label htmlFor="language" className="text-sm">Language</Label>
               <Select
                 value={projectData.language}
                 onValueChange={(value: 'csharp' | 'java' | 'javascript' | 'python') => 
                   updateProjectData({ language: value })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -88,7 +88,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="namespace">
+              <Label htmlFor="namespace" className="text-sm">
                 {projectData.language === 'java' ? 'Package' : 
                  projectData.language === 'javascript' ? 'Module' :
                  projectData.language === 'python' ? 'Module' : 'Namespace'}
@@ -98,31 +98,33 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 value={projectData.namespace}
                 onChange={(e) => updateProjectData({ namespace: e.target.value })}
                 placeholder="Enter namespace"
+                className="text-sm"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="className">Class Name</Label>
+              <Label htmlFor="className" className="text-sm">Class Name</Label>
               <Input
                 id="className"
                 value={projectData.className}
                 onChange={(e) => updateProjectData({ className: e.target.value })}
                 placeholder="Enter class name"
+                className="text-sm"
               />
             </div>
           </Card>
         </TabsContent>
 
-        <TabsContent value="method" className="space-y-4">
-          <Card className="p-4 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+        <TabsContent value="method" className="space-y-3 sm:space-y-4">
+          <Card className="p-3 sm:p-4 space-y-3 sm:space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="visibility">Visibility</Label>
+                <Label htmlFor="visibility" className="text-sm">Visibility</Label>
                 <Select
                   value={projectData.methods[selectedMethod]?.visibility}
                   onValueChange={(value) => updateMethod(selectedMethod, { visibility: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -135,12 +137,12 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="returnType">Return Type</Label>
+                <Label htmlFor="returnType" className="text-sm">Return Type</Label>
                 <Select
                   value={projectData.methods[selectedMethod]?.returnType}
                   onValueChange={(value) => updateMethod(selectedMethod, { returnType: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -155,12 +157,13 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="methodName">Method Name</Label>
+              <Label htmlFor="methodName" className="text-sm">Method Name</Label>
               <Input
                 id="methodName"
                 value={projectData.methods[selectedMethod]?.name}
                 onChange={(e) => updateMethod(selectedMethod, { name: e.target.value })}
                 placeholder="Enter method name"
+                className="text-sm"
               />
             </div>
 
@@ -170,18 +173,18 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 checked={projectData.methods[selectedMethod]?.isStatic}
                 onCheckedChange={(checked) => updateMethod(selectedMethod, { isStatic: checked })}
               />
-              <Label htmlFor="static">Static Method</Label>
+              <Label htmlFor="static" className="text-sm">Static Method</Label>
             </div>
 
             <Separator />
 
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label>Parameters</Label>
+                <Label className="text-sm">Parameters</Label>
                 <Button
                   size="sm"
                   onClick={addParameter}
-                  className="bg-dev-success hover:bg-dev-success/90"
+                  className="bg-dev-success hover:bg-dev-success/90 text-xs px-2 py-1"
                 >
                   <PlusIcon className="h-3 w-3 mr-1" />
                   Add
@@ -194,13 +197,13 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                     placeholder="Name"
                     value={param.name}
                     onChange={(e) => updateParameter(index, 'name', e.target.value)}
-                    className="flex-1"
+                    className="flex-1 text-sm"
                   />
                   <Select
                     value={param.type}
                     onValueChange={(value) => updateParameter(index, 'type', value)}
                   >
-                    <SelectTrigger className="w-24">
+                    <SelectTrigger className="w-20 sm:w-24 text-sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -214,7 +217,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                     size="sm"
                     variant="outline"
                     onClick={() => removeParameter(index)}
-                    className="text-destructive hover:text-destructive/90"
+                    className="text-destructive hover:text-destructive/90 px-2"
                   >
                     <TrashIcon className="h-3 w-3" />
                   </Button>
@@ -222,7 +225,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               ))}
 
               {projectData.methods[selectedMethod]?.parameters.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-4">
+                <p className="text-xs sm:text-sm text-muted-foreground text-center py-4">
                   No parameters added yet
                 </p>
               )}

@@ -66,38 +66,40 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between p-3 border-b bg-muted/30">
-        <div className="flex items-center gap-2">
-          <CodeIcon className="h-4 w-4 text-dev-primary" />
-          <h3 className="font-semibold text-sm">Generated Code</h3>
-          <span className="text-xs px-2 py-1 bg-dev-primary/10 text-dev-primary rounded-full font-mono">
+      <div className="flex items-center justify-between p-2 sm:p-3 border-b bg-muted/30">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <CodeIcon className="h-3 w-3 sm:h-4 sm:w-4 text-dev-primary" />
+          <h3 className="font-semibold text-xs sm:text-sm">Generated Code</h3>
+          <span className="text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-dev-primary/10 text-dev-primary rounded-full font-mono">
             {getLanguageDisplayName(language)}
           </span>
-          <span className="text-xs px-2 py-1 bg-dev-success/10 text-dev-success rounded-full font-mono">
+          <span className="hidden sm:inline text-xs px-2 py-1 bg-dev-success/10 text-dev-success rounded-full font-mono">
             Editable
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <Button
             size="sm"
             variant="outline"
             onClick={copyToClipboard}
-            className="h-8"
+            className="h-7 sm:h-8 px-2 sm:px-3 text-xs"
           >
             {copied ? (
-              <CheckIcon className="h-3 w-3 mr-1" />
+              <CheckIcon className="h-3 w-3 sm:mr-1" />
             ) : (
-              <CopyIcon className="h-3 w-3 mr-1" />
+              <CopyIcon className="h-3 w-3 sm:mr-1" />
             )}
-            {copied ? 'Copied!' : 'Copy'}
+            <span className="hidden sm:inline">
+              {copied ? 'Copied!' : 'Copy'}
+            </span>
           </Button>
           <Button
             size="sm"
             onClick={onDownload}
-            className="h-8 bg-dev-primary hover:bg-dev-primary/90"
+            className="h-7 sm:h-8 px-2 sm:px-3 text-xs bg-dev-primary hover:bg-dev-primary/90"
           >
-            <DownloadIcon className="h-3 w-3 mr-1" />
-            Download
+            <DownloadIcon className="h-3 w-3 sm:mr-1" />
+            <span className="hidden sm:inline">Download</span>
           </Button>
         </div>
       </div>
@@ -112,7 +114,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           theme="vs-dark"
           options={{
             minimap: { enabled: false },
-            fontSize: 14,
+            fontSize: window.innerWidth < 768 ? 12 : 14,
             lineNumbers: 'on',
             roundedSelection: false,
             scrollBeyondLastLine: false,
@@ -125,7 +127,21 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             formatOnType: true,
             autoIndent: 'full',
             tabSize: 4,
-            insertSpaces: true
+            insertSpaces: true,
+            // Mobile-specific adjustments
+            scrollbar: {
+              useShadows: false,
+              horizontal: 'auto',
+              vertical: 'auto',
+              horizontalScrollbarSize: window.innerWidth < 768 ? 8 : 12,
+              verticalScrollbarSize: window.innerWidth < 768 ? 8 : 12,
+            },
+            overviewRulerBorder: false,
+            overviewRulerLanes: 0,
+            hideCursorInOverviewRuler: true,
+            renderLineHighlight: 'gutter',
+            lineDecorationsWidth: window.innerWidth < 768 ? 8 : 10,
+            lineNumbersMinChars: window.innerWidth < 768 ? 3 : 4,
           }}
         />
       </div>

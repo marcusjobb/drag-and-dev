@@ -103,7 +103,7 @@ export const Canvas: React.FC<CanvasProps> = ({ elements, onDrop, onElementReord
   return (
     <div className="h-full relative">
       <div
-        className={`w-full h-full min-h-[500px] border-2 border-dashed rounded-xl transition-all duration-300 ${
+        className={`w-full h-full min-h-[300px] sm:min-h-[500px] border-2 border-dashed rounded-xl transition-all duration-300 ${
           draggedElement 
             ? 'border-dev-primary bg-dev-primary/5' 
             : 'border-border bg-canvas/50'
@@ -113,46 +113,46 @@ export const Canvas: React.FC<CanvasProps> = ({ elements, onDrop, onElementReord
       >
         {elements.length === 0 ? (
           <div className="flex items-center justify-center h-full text-center">
-            <div className="space-y-4">
-              <div className="w-20 h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
-                <PlusIcon className="h-8 w-8 text-muted-foreground" />
+            <div className="space-y-4 p-4">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
+                <PlusIcon className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
+                <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
                   Start Building Your Method
                 </h3>
-                <p className="text-muted-foreground max-w-md">
-                  Drag code elements from the toolbox on the left to start building your method. 
+                <p className="text-sm sm:text-base text-muted-foreground max-w-md">
+                  Drag code elements from the toolbox to start building your method. 
                   Each element can be configured in the properties panel.
                 </p>
               </div>
               <div className="flex items-center justify-center gap-2 text-dev-primary">
-                <MousePointerClickIcon className="h-4 w-4" />
-                <span className="text-sm font-medium">Drag & Drop to Begin</span>
+                <MousePointerClickIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="text-xs sm:text-sm font-medium">Drag & Drop to Begin</span>
               </div>
             </div>
           </div>
         ) : (
-          <div className="p-6 space-y-4">
+          <div className="p-3 sm:p-6 space-y-3 sm:space-y-4">
             {elements.map((element, index) => (
               <Card 
                 key={element.id}
-                className={`p-4 bg-card border-l-4 border-l-${getElementColor(element.type)} hover:shadow-md transition-shadow cursor-move`}
+                className={`p-3 sm:p-4 bg-card border-l-4 border-l-${getElementColor(element.type)} hover:shadow-md transition-shadow cursor-move`}
                 draggable
                 onDragStart={(e) => handleElementDragStart(e, index)}
                 onDrop={(e) => handleElementDrop(e, index)}
                 onDragOver={handleElementDragOver}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="text-sm font-mono bg-muted px-2 py-1 rounded">
+                <div className="flex items-start sm:items-center justify-between gap-2 sm:gap-0">
+                  <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                    <div className="text-xs sm:text-sm font-mono bg-muted px-2 py-1 rounded flex-shrink-0">
                       {index + 1}
                     </div>
-                    <code className="text-sm font-mono text-foreground">
+                    <code className="text-xs sm:text-sm font-mono text-foreground break-all sm:break-normal">
                       {element.content}
                     </code>
                   </div>
-                  <div className={`px-2 py-1 text-xs rounded-full bg-${getElementColor(element.type)}/10 text-${getElementColor(element.type)} font-medium`}>
+                  <div className={`px-2 py-1 text-xs rounded-full bg-${getElementColor(element.type)}/10 text-${getElementColor(element.type)} font-medium flex-shrink-0`}>
                     {element.type}
                   </div>
                 </div>
