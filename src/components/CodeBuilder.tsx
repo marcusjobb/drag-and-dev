@@ -73,7 +73,7 @@ const CodeBuilder: React.FC = () => {
     
     setDraggedElement(null);
     
-    // Trigger celebration!
+    // Trigger celebration for element drop!
     const celebrations: ('confetti' | 'sparkles' | 'unicorn')[] = 
       ['confetti', 'sparkles', 'unicorn'];
     const randomCelebration = celebrations[Math.floor(Math.random() * celebrations.length)];
@@ -106,12 +106,15 @@ const CodeBuilder: React.FC = () => {
     if (value === 'code') {
       const code = CodeGenerator.generate(projectData);
       setGeneratedCode(code);
-      setCelebrationType('fireworks');
-      setCelebrationTrigger(prev => prev + 1);
-      toast({
-        title: '🚀 Code Generated!',
-        description: 'Your epic method has been successfully generated!',
-      });
+      // Only show fireworks if code was actually generated (not just switching tabs)
+      if (!generatedCode) {
+        setCelebrationType('fireworks');
+        setCelebrationTrigger(prev => prev + 1);
+        toast({
+          title: '🚀 Code Generated!',
+          description: 'Your epic method has been successfully generated!',
+        });
+      }
     }
   };
 

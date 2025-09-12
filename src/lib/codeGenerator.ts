@@ -247,6 +247,12 @@ export class CodeGenerator {
         return `System.out.println(${element.properties?.message ? `"${element.properties.message}"` : '""'});`;
       case 'console.write':
         return `System.out.print(${element.properties?.message ? `"${element.properties.message}"` : '""'});`;
+      case 'console.readkey':
+        return `java.util.Scanner scanner = new Scanner(System.in); scanner.nextLine();`;
+      case 'console.readline':
+        return `java.util.Scanner scanner = new Scanner(System.in); String input = scanner.nextLine();`;
+      case 'trace.write':
+        return `System.out.print(${element.properties?.message ? `"${element.properties.message}"` : '""'});`;
       case 'for':
         const { variable = 'i', start = '0', end = '10', increment = '1' } = element.properties || {};
         return `for (int ${variable} = ${start}; ${variable} < ${end}; ${variable}+=${increment}) {${element.children ? this.generateChildElements(element.children, 'java') : ''}\n        }`;
@@ -411,6 +417,12 @@ export class CodeGenerator {
         return `console.log(${element.properties?.message ? `"${element.properties.message}"` : '""'});`;
       case 'console.write':
         return `process.stdout.write(${element.properties?.message ? `"${element.properties.message}"` : '""'});`;
+      case 'console.readkey':
+        return `require('readline-sync').keyIn();`;
+      case 'console.readline':
+        return `const input = require('readline-sync').question('');`;
+      case 'trace.write':
+        return `console.trace(${element.properties?.message ? `"${element.properties.message}"` : '""'});`;
       case 'for':
         const { variable = 'i', start = '0', end = '10', increment = '1' } = element.properties || {};
         return `for (let ${variable} = ${start}; ${variable} < ${end}; ${variable} += ${increment}) {${element.children ? this.generateChildElements(element.children, 'javascript') : ''}\n        }`;
@@ -471,6 +483,12 @@ export class CodeGenerator {
         return `print(${element.properties?.message ? `"${element.properties.message}"` : '""'})`;
       case 'console.write':
         return `print(${element.properties?.message ? `"${element.properties.message}"` : '""'}, end='')`;
+      case 'console.readkey':
+        return `input("Press any key to continue...")`;
+      case 'console.readline':
+        return `user_input = input()`;
+      case 'trace.write':
+        return `import traceback; traceback.print_stack()`;
       case 'for':
         const { variable = 'i', start = '0', end = '10' } = element.properties || {};
         return `for ${variable} in range(${start}, ${end}):${element.children ? this.generateChildElements(element.children, 'python') : '\\n            pass'}`;

@@ -39,6 +39,10 @@ export const Canvas: React.FC<CanvasProps> = ({ elements, onDrop, onElementReord
     const contentMap: Record<string, string> = {
       'console.writeline': 'Console.WriteLine("Hello World");',
       'console.write': 'Console.Write("Hello");',
+      'console.readkey': 'Console.ReadKey();',
+      'console.readline': 'string input = Console.ReadLine();',
+      'debug.print': 'Debug.Print("Debug message");',
+      'trace.write': 'Trace.Write("Trace message");',
       'for': 'for (int i = 0; i < 10; i++)',
       'while': 'while (condition)',
       'if': 'if (condition)',
@@ -58,6 +62,10 @@ export const Canvas: React.FC<CanvasProps> = ({ elements, onDrop, onElementReord
     const propertiesMap: Record<string, Record<string, any>> = {
       'console.writeline': { message: 'Hello World' },
       'console.write': { message: 'Hello' },
+      'console.readkey': {},
+      'console.readline': {},
+      'debug.print': { message: 'Debug message' },
+      'trace.write': { message: 'Trace message' },
       'for': { variable: 'i', start: '0', end: '10', increment: '1' },
       'while': { condition: 'condition' },
       'if': { condition: 'condition' },
@@ -68,7 +76,7 @@ export const Canvas: React.FC<CanvasProps> = ({ elements, onDrop, onElementReord
   };
 
   const getElementColor = (type: string): string => {
-    if (type.includes('console')) return 'element-output';
+    if (type.includes('console') || type.includes('debug') || type.includes('trace')) return 'element-output';
     if (['for', 'while'].includes(type)) return 'element-control';
     if (type.includes('if')) return 'element-logic';
     return 'element-data';
